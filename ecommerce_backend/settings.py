@@ -50,7 +50,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
 
+    'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_auth',
     'accounts.apps.AccountsConfig',
 ]
 
