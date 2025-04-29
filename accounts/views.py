@@ -8,6 +8,6 @@ class Home(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self):
         content = {'message': 'Hello world'}
         return Response(content)
