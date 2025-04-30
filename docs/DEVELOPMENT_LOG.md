@@ -127,3 +127,69 @@
 
 ---
 
+## 2025-04-30 - Frontend Auth (Registration) & Next.js Setup
+
+-   **General:** Focused on setting up the frontend project with Next.js and
+    implementing the user registration form and API call. It was a challenging day
+    filled with frustration and learning, ultimately resulting in a working
+    registration process.
+
+-   **Frontend:**
+    * Reviewed React core concepts (components, props, state, hooks) via Next.js
+        docs to refresh understanding before coding. Concepts feel clearer now, though
+        still not an expert.
+    * Started Next.js project setup (`ecommerce_frontend`) using `create-next-app`.
+        Made choices: No TypeScript (initially!), Yes ESLint, No Tailwind CSS, Yes `src/`,
+        Yes App Router, Yes Turbopack.
+    * Figuring out the Next.js App Router structure (`src/app/`, `ui/`, `app/register/page.tsx`,
+        `ui/register-form.tsx`) took time to understand how pages, layouts, and
+        components link together. Used `ui/` directory for form components based on
+        docs examples.
+    * **Implemented the `RegisterForm` component:**
+        * Used `useState` to manage form input data (`formData`), validation
+            errors (`errors`), submission state (`isSubmitting`), overall submission
+            error (`submitError`), and success state (`isSuccess`).
+        * Created `handleChange` function to update `formData` state on input changes.
+        * Implemented basic client-side validation within `handleSubmit` (checking
+            required fields and password match).
+        * Set up the `onSubmit` handler to prevent default form submission and manage
+            `isSubmitting` state.
+    * **Implemented the `registerUser` service function** (`services/auth.ts`).
+        * This function handles the API call to the backend registration endpoint.
+        * Used `Workspace` to make the `POST` request to the `dj-rest-auth` registration
+            URL (`/dj-rest-auth/registration/`), setting appropriate headers
+            (`Content-Type`, `Accept`) and sending the form data as a JSON string.
+        * Included environment variable usage (`process.env.NEXT_PUBLIC_API_URL`) for
+            the API base URL.
+        * Included robust error handling: Checking `response.ok`, parsing the
+            response body (JSON or text), and extracting/formatting error messages
+            from the backend's response structure to throw a descriptive error if the
+            API call fails. Handled network errors in the catch block.
+    * **Unexpectedly adopted TypeScript:** While debugging errors and warnings (LSP
+        help), found that adding type definitions (e.g., `FormData`, `FormErrors`,
+        using `: React.ChangeEvent<HTMLInputElement>`) helped clarify expected data
+        structures and resolve issues. Decided to embrace TypeScript and commit to
+        learning it as part of this project's stack. It added another layer to the
+        learning curve but seems beneficial.
+    * **Key Challenges:** Figuring out the Next.js App Router structure and how to
+        correctly initiate and handle the backend API call from the frontend component
+        and service function were the biggest hurdles. Debugging CORS headers was
+        also a point of focus (though mostly backend config changes were needed).
+    * *Decision:* Incorporated basic client-side validation in the form for user
+        experience, relying on backend for full validation.
+
+-   **Backend:** No major backend code changes needed today, confirming the
+    `dj-rest-auth` API setup from the previous session was correctly completed and
+    ready to receive requests.
+
+-   **Learning:** Gained practical understanding of React state and event handling
+    for forms, the process of making asynchronous API calls from a frontend
+    component using a service function, handling API responses and errors on the
+    client side, and the basic structure of Next.js App Router. Also began the
+    unexpected journey into learning TypeScript. Learned that figuring out complex
+    integrations often requires looking at specific examples and adapting them,
+    and that encountering and solving errors is a key way to learn new tools like
+    TypeScript and understand library behaviors.
+
+---
+
