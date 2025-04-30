@@ -1,6 +1,6 @@
 # Development Log - E-commerce Project
 
-## 2025-04-29 00:21 AM - Postgresql Setup & Initial User Authentication
+## 2025-04-28 00:21 AM - Postgresql Setup & Initial User Authentication
 
 -   **General:** Started working on setting up the database and implementing initial
     user authentication today. Focus was on getting the foundational backend pieces
@@ -43,3 +43,87 @@
         PostgreSQL DB.
 
 -   **Frontend:** No frontend work done yet for these features.
+
+
+## 2025-04-29 - PostgreSQL Fixes & Auth Libraries Setup
+
+-   **General:** Focused on resolving lingering PostgreSQL setup issues and tackling
+    the complex backend authentication library integration today. It was challenging
+    but ultimately successful.
+
+-   **Backend:**
+    * Had trouble with PostgreSQL setup again due to forgetting the password,
+        requiring a partial re-setup/uninstall process. Resolved the password issue.
+    * Integrated PostgreSQL with the Django project using `django-environ`. This
+        took about an hour, learning how to configure the database URL string in the
+        `.env` file and use `env.db()`.
+    * Used `django-environ` as it's new to me, specifically for Django, and helps
+        keep configuration clean, separate from the codebase.
+    * Also learned how to generate a random secret key using Django's utility
+        function for better security in production.
+    * *Problem:* Encountered a `MigrationSchemaMissing` error ("permission denied for
+        schema public") when running `python manage.py migrate` after connecting to
+        PostgreSQL with the new user.
+    * *Solution:* The database user (`ecommerce_admin`) didn't have sufficient
+        privileges on the default `public` schema to create tables. Had to grant
+        `USAGE` and `CREATE` privileges on the `public` schema to the user and set
+        the user as the owner of the database.
+        ```bash
+        GRANT USAGE, CREATE ON SCHEMA public TO ecommerce_admin;
+        ALTER DATABASE ecommerce_db OWNER TO ecommerce_admin;
+        ```
+        Migrations ran successfully after this.
+    * Tackled the integration of `djangorestframework-simplejwt`, `dj-rest-auth`,
+        and `allauth`. This was the most challenging part ("horrible day," "lost for
+        hours"). The documentation felt complicated, making it hard to know where to
+        start and connect the pieces.
+    * *Outcome of Struggle:* Successfully configured `settings.py` and project
+        `urls.py` based on documentation and examples found.
+        * Added `rest_framework`, `rest_framework.authtoken` (needed by some libs),
+            `rest_framework_simplejwt`, `dj_rest_auth`, `dj_rest_auth.registration`,
+            `allauth`, `allauth.account`, `allauth.socialaccount` to `INSTALLED_APPS`.
+        * Added `allauth.account.middleware.AccountMiddleware` to `MIDDLEWARE`.
+        * Configured `REST_FRAMEWORK` to use `JWTAuthentication` and
+            `JWTCookieAuthentication` by default.
+        * Set `REST_AUTH = {'USE_JWT': True}` and `SITE_ID = 1`.
+        * Configured a console backend for emails (`EMAIL_BACKEND`), required by
+            `allauth`.
+        * Included URLs for `simplejwt` token views and `dj-rest-auth` core and
+            registration views in `ecommerce_backend/urls.py` under API paths:
+            ```python
+            # ... other imports
+            from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                                        TokenRefreshView)
+            # ... urlpatterns start
+                path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+                path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+                path('dj-rest-auth/', include('dj_rest_auth.urls')),
+                path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+            # ...
+            ```
+    * Tested the registration and login endpoints provided by `dj-rest-auth`
+        using Insomnia.
+        * **Registration (`POST /dj-rest-auth/registration/`):** Works with
+            `username`, `email`, `password`, `password2` JSON body.
+        * **Login (`POST /dj-rest-auth/login/`):** Works with `username`,
+            `password` JSON body, successfully returns JWT access and refresh tokens.
+    * Encountered a message on logout endpoint about cookies/blacklisting not
+        enabled. Understand this means server-side token invalidation isn't configured
+        and client needs to delete the token. (Decided to accept client-side deletion
+        for MVP).
+    * *Decision:* Keeping the old `accounts/` app with template views for now,
+        though it's not part of the API auth flow. Will remove later once API auth
+        is fully confirmed working with frontend.
+    * **Learning:** Integrating multiple authentication libraries is complex and
+        requires careful attention to documentation, settings, and URL inclusion.
+        Debugging permission errors in PostgreSQL requires understanding database schemas.
+
+-   **Frontend:**
+    * Started the frontend project setup using `create-next-app`.
+    * Made specific choices during setup: No TypeScript, Yes ESLint, No Tailwind CSS,
+        Yes `src/` directory, Yes App Router, Yes Turbopack. These align with
+        previous decisions to manage learning load and focus on core logic.
+    * Frontend setup is complete.
+
+---
+
