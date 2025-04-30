@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'corsheaders',
+
     'accounts.apps.AccountsConfig',
 ]
 
@@ -72,6 +74,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React dev server
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = 'ecommerce_backend.urls'
