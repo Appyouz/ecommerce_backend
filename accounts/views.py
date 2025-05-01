@@ -21,10 +21,13 @@ class CustomLoginView(LoginView):
     
     @override
     def get_response(self):
-        return super().get_response()
+        response = super().get_response()
         user = self.user
-        if user and user.is_authenticated:
-            response.data['user'] = UserSerializer(user).data
+        if response and hasattr(response, 'data') and isinstance(response.data, dict) and user and user.is_authenticated:
+            try:
+                response.data['user'] = UserSerializer(user).data
+            except Exception as e:
+                print(f"Error adding user data to login response: {e}")
 
         return response
 
