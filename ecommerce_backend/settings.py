@@ -170,6 +170,16 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     'USE_JWT': True,
+
+    'JWT_AUTH_COOKIE': 'jwt-auth',
+
+    'JWT_AUTH_REFRESH_COOKIE': 'refresh-token', # Explicitly set the name
+    
+    'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': True, # Explicitly True (default)
+    'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': True, # Explicitly True (default)
+    
+    'LOGIN_VIEW': 'accounts.views.CustomLoginView',
+    'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
 }
 
 SITE_ID = 1
@@ -183,13 +193,16 @@ AUTHENTICATION_BACKENDS = [
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+
+    'JWT_AUTH_COOKIE_SECURE': False, # Ensure this is False for http
+    'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
 }
 
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_SIGNUP_FIELDS = {'email*', 'username*', 'password1*', 'password2*'}
-ACCOUNT_LOGIN_METHOD = {'username', 'email'}
+ACCOUNT_LOGIN_METHODS = ['username', 'email']
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
