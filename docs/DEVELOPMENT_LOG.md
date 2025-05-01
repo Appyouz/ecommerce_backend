@@ -194,6 +194,7 @@
 ---
 
 ## 2025-05-01 - Frontend Auth (Login, Dashboard, Route Protection Attempt)
+- **Started day by doing a crash document tutorial on typescript**
 
 -   **General:** Focused on implementing the frontend login functionality, and
     starting on displaying user state and basic route protection. It was another
