@@ -193,3 +193,89 @@
 
 ---
 
+## 2025-05-01 - Frontend Auth (Login, Dashboard, Route Protection Attempt)
+
+-   **General:** Focused on implementing the frontend login functionality, and
+    starting on displaying user state and basic route protection. It was another
+    day with significant challenges, requiring looking at resources and involving
+    some necessary copying due to complexity and fatigue, but ultimately led to
+    core features working.
+
+-   **Frontend:**
+    * **Login Form Implementation:** Created the `LoginForm` component and the
+        corresponding `login` service function (`services/auth.ts`). Felt more
+        straightforward than registration, building confidence in writing form and
+        API calling logic mostly independently by adapting the registration code
+        pattern.
+    * Implemented `useState` for input fields, `isSubmitting`, `errors`, and added
+        `isSuccess`/error state handling (felt good to implement these parts myself).
+    * Updated `auth.ts` to include the `login` function (makes the POST request to
+        the backend `/dj-rest-auth/login/` endpoint, handles response, checks
+        `response.ok`, extracts errors). Also added `WorkspaceHomeData` (GET to `/`
+        protected endpoint) and `logoutUser` (POST to `/dj-rest-auth/logout/`)
+        service functions.
+    * Used `credentials: 'include'` in `Workspace` calls for login, logout, and fetching
+        protected data, necessary for sending/receiving HttpOnly cookies.
+    * Implemented the `getCookie` helper function to retrieve the CSRF token from
+        cookies and included the `X-CSRFToken` header in the `logoutUser` POST request,
+        as required by Django's CSRF protection for cookie-based auth.
+    * **Debugging JWT Cookie Visibility:** Figured out why JWT access tokens weren't
+        appearing in standard browser headers or `document.cookie`. This was due to
+        backend `SIMPLE_JWT` settings (`JWT_AUTH_COOKIE_HTTPONLY: True`) making them
+        HttpOnly cookies, which are only visible in browser Developer Tools (Application/
+        Storage tab) and automatically sent by the browser with requests. This involved
+        tweaking several backend settings to ensure cookies were correctly issued.
+    * **Dashboard Component & Initial Route Protection Attempt:** Created a basic
+        `Dashboard` component. Used a `useEffect` to call `WorkspaceAuthenticatedUser()`
+        on load to check authentication status.
+        * If authenticated (`WorkspaceAuthenticatedUser()` returns user data), displays
+            a welcome message and includes buttons to `WorkspaceHomeData` (to test access
+            to a protected route) and `logoutUser`.
+        * If not authenticated (`WorkspaceAuthenticatedUser()` returns null), redirects
+            the user to the `/login` page.
+    * Added a `useEffect` to the `LoginForm` component to perform a similar
+        `WorkspaceAuthenticatedUser()` check on login page load and redirect authenticated
+        users to `/dashboard`.
+    * **Reflection on Dashboard/Protection Code:** Acknowledged that the implementation
+        logic for the Dashboard component and the useEffects for route protection was
+        largely copied due to fatigue and wanting to see the flow work. Committed
+        to reviewing and fully understanding this code later. Realized this provides
+        the desired flow: unauthenticated go to login, authenticated go to dashboard,
+        login page redirects if already logged in.
+    * Continued getting comfortable with TypeScript; can spot its usage and
+        understand its purpose better now.
+
+-   **Backend:**
+    * Created the `accounts/serializers.py` file and implemented the `UserSerializer`
+        to serialize user model data. This was my first time writing a DRF serializer
+        from scratch.
+    * Created `CustomLoginView` and `CustomLogoutView` in `accounts/views.py`,
+        extending `dj_rest-auth` views.
+        * `CustomLoginView` overrides `get_response` to include serialized user data
+            in the login API response using the new `UserSerializer`.
+        * `CustomLogoutView` is a basic pass-through (no override needed).
+    * **Realization:** Discovered that the frontend is currently calling the default
+        `dj-rest-auth` login/logout endpoints (at `/dj-rest-auth/login/`,
+        `/dj-rest-auth/logout/`) due to URL configuration, and therefore my custom
+        login/logout views (mapped at `/login/`, `/logout/`) are not currently being
+        used by the frontend. Felt frustrating to spend time on unused code but
+        understand *how* it works.
+    * Noted the persistent `AUTHENTICATION_METHOD` deprecation warning but decided
+        to ignore it for now as it doesn't break functionality.
+    * Configured `REST_AUTH` and `SIMPLE_JWT` settings in `settings.py` to enable
+        JWT HttpOnly cookies and token blacklisting (`ROTATE_REFRESH_TOKENS`,
+        `BLACKLIST_AFTER_ROTATION`).
+
+-   **Learning:** Solidified understanding of React state and event handling by
+    implementing the login form. Learned to write a basic DRF serializer. Gained
+    practical experience creating frontend service functions for API calls (login,
+    logout, protected data fetch). Successfully implemented JWT HttpOnly cookie
+    authentication from frontend to backend, including using `credentials: 'include'`
+    and handling CSRF tokens for POST requests. Learned how to debug cookie behavior
+    in browser dev tools. Began implementing client-side route protection patterns
+    using `useEffect` and redirection based on authentication status checks. Learned
+    that needing to copy complex logic when fatigued is okay, with the commitment
+    to understand it later. Continued learning TypeScript through practice.
+
+---
+
