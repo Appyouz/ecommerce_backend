@@ -280,3 +280,82 @@
 
 ---
 
+## 2025-05-02 - Frontend Auth (Global State & Route Protection)
+
+-   **General:** Focused on implementing global authentication state management
+    and application-wide route protection on the frontend. This was a challenging
+    day requiring significant use of external resources and examples, but resulted
+    in the core authentication flow being managed globally across the application.
+
+-   **Frontend:**
+    * **Global Authentication State Management:** Implemented the `AuthContext`
+        and `AuthProvider` using React Context API. This serves as a single source
+        of truth for the user's authentication status (`isAuthenticated`), user
+        data (`user`), and initial loading state (`isLoading`).
+    * Used a `useEffect` within the `AuthProvider` to call the
+        `WorkspaceAuthenticatedUser()` service function when the application loads.
+        This checks for existing authentication (via HttpOnly cookies) and
+        initializes the global state accordingly.
+    * Provided the authentication state and the `loginSuccess` and
+        `logoutSuccess` functions (which update the global state) via the
+        `AuthContext.Provider`.
+    * Created the `useAuth` custom hook for easily accessing the context state
+        in components.
+    * **Refactored Components for Global State:** Updated existing components:
+    * `LoginForm.tsx`: Refactored to consume the `AuthContext` using `useAuth`.
+        Removed local authentication checking state. The `handleSubmit` function
+        now calls the `login` service and then calls `loginSuccess()` from the
+        context to update the global state, triggering redirection via a `useEffect`
+        that depends on the global state.
+    * `Dashboard.tsx`: Refactored to consume the `AuthContext` using `useAuth`.
+        Removed local user and loading states. This component now gets the user
+        data, authentication status, and loading state directly from the global
+        context.
+    * **Implemented Application-Wide Route Protection:**
+    * Added `useEffect` hooks in `LoginForm.tsx` and `Dashboard.tsx` that
+        depend on the global `isLoading` and `isAuthenticated` state.
+    * These effects correctly implement redirection logic: authenticated users
+        landing on `/login` are redirected to `/dashboard`; unauthenticated users
+        landing on `/dashboard` (after the initial check is complete) are
+        redirected to `/login`.
+    * **Display Authentication Status in UI (Globally):**
+    * Created a shared `Header.tsx` component. This component consumes the
+        global authentication state (`useAuth()`).
+    * Implemented conditional rendering in the Header to show "Loading...",
+        "Welcome, [Username]! Logout", or "Login / Sign Up" links based on
+        the global `isLoading` and `isAuthenticated` state.
+    * Included the Header component in the root `app/layout.tsx` within the
+        `AuthProvider` to ensure it appears on all pages and has access to the
+        global state.
+    * Moved the primary logout button to the Header, ensuring it calls
+        `logoutUser()` and `logoutSuccess()` from the context, followed by
+        `router.push('/login')`.
+    * **Logout Integration:** The logout action now primarily handled by the
+        Header component correctly calls the `logoutUser` service function
+        (which triggers backend cookie clearing) and then calls the `logoutSuccess()`
+        function from the context to update the global state, causing the route
+        protection `useEffect` to trigger redirection. (Note: A local logout
+        button on Dashboard was also kept and updated).
+    * Acknowledged that implementing the Dashboard component's logic and the global
+        state pattern required significant referencing of external code examples due to
+        their complexity and personal fatigue. Committed to revisiting this code to
+        deepen understanding later.
+    * Continued using and getting more comfortable with TypeScript as it helps clarify
+        expected data shapes.
+
+-   **Backend:** No backend code changes were strictly needed for implementing the
+    global frontend state management today, confirming the backend authentication
+    API and cookie setup from previous sessions were correctly completed and ready.
+
+-   **Learning:** Gained practical experience implementing a standard global state
+    management pattern using React Context API. Learned how to structure an
+    `AuthProvider` and `useAuth` hook. Understood how to use `useEffect` in the
+    provider for initial asynchronous state initialization. Learned how to refactor
+    components to consume a global context. Successfully implemented robust
+    client-side route protection logic that relies on global authentication state.
+    Integrated API service calls (login, logout, fetch user) with global state
+    updates. Reinforced that complex patterns often require learning from external
+    resources and that understanding can deepen through review and use. Learned how
+    to create and use shared UI components that depend on global application state.
+
+---
