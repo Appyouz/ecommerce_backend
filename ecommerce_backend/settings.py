@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'accounts.apps.AccountsConfig',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
@@ -206,3 +207,8 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_SIGNUP_FIELDS = {'email*', 'username*', 'password1*', 'password2*'}
 ACCOUNT_LOGIN_METHODS = ['username', 'email']
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+
+
+# MEDIA FILES SETTINGS
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
