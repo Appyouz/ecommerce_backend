@@ -1,5 +1,5 @@
 # Development Log - E-commerce Project
-
+[ecommerce_frontend](https://github.com/Appyouz/ecommerce_frontend) 
 ## 2025-04-28 00:21 AM - Postgresql Setup & Initial User Authentication
 
 -   **General:** Started working on setting up the database and implementing initial
@@ -357,5 +357,98 @@
     updates. Reinforced that complex patterns often require learning from external
     resources and that understanding can deepen through review and use. Learned how
     to create and use shared UI components that depend on global application state.
+
+---
+
+
+## 2025-05-05 - Product Catalog Backend
+
+-   **General:** Started working on the Product Catalog milestone today. Focused
+    on building the core backend pieces for managing products and categories.
+
+-   **Backend:**
+    * Created the `Product` and `Category` models.
+    * Created DRF `serializers` for both models to handle data conversion to/from JSON.
+        Configured the `ProductSerializer` to nest the `CategorySerializer` for
+        read operations, showing full category details instead of just the ID.
+    * Created DRF `ViewSets` for `Product` and `Category`. Implemented list and
+        retrieve views. Used `ModelViewSet` which provides these automatically.
+    * Learned that I can make multiple commits locally before pushing them all
+        at once to the remote repository.
+
+-   **Learning:** Gained experience defining Django models with relationships.
+    Learned how to create DRF `ModelSerializers` and use nested serializers for
+    representing related data. Practiced using `ModelViewSet` for standard API
+    endpoints like list and retrieve.
+
+---
+
+## 2025-05-06 - Product Detail Frontend
+
+-   **General:** Worked on creating the frontend page for displaying individual
+    product details today. It felt relatively straightforward.
+
+-   **Frontend:**
+    * Created the `ProductDetailPage` component.
+    * The main challenge was handling the passing of the product `id` as a
+        parameter for routing. Initially tried using props which didn't work
+        for this, then used `useParams` (from a React Router context, likely
+        needed to figure out Next.js's way for this), which worked, but I want
+        to revisit this to ensure it's the correct Next.js App Router method
+        later.
+    * The coding logic for fetching and displaying the data was fairly simple
+        once the parameter passing was figured out.
+
+-   **Learning:** Gained initial experience with client-side routing and how to
+    extract parameters from the URL to fetch data for a specific item. Realized
+    the importance of understanding the specific routing method used by the
+    framework (Next.js App Router in this case).
+
+---
+
+## 2025-05-07 - Frontend Restructure & Shopping Cart Backend
+
+-   **General:** Started tackling features related to the Shopping Cart
+    (Milestone 3 according to the plan). This involved some necessary frontend
+    restructuring and significant backend work on the core cart logic.
+
+-   **Frontend:**
+    * Implemented a button on the product list view that navigates to the
+        product detail page. Again faced a challenge with passing the product ID
+        as a parameter specifically through the `onClick` event handler, requiring
+        looking up how to do this correctly in React/JSX. The rest of the navigation
+        logic felt intuitive.
+    * **Restructured the project:** Decided to move components and project files
+        out of the `src/app/` directory and place them directly under `src/`. The
+        new structure under `src/` now includes `app/` (only for page routes),
+        `context/`, `services/`, `ui/` (for components, planning to rename to `pages/`
+        but unsure if this is the correct term for route components), and `type.ts`
+        (for TypeScript definitions). Other library or feature components will be
+        added to `src/` as needed.
+
+-   **Backend:**
+    * **Learning:** Gained practical experience in creating and configuring a new
+        Django app (`cart`) specifically for the shopping cart feature, separating
+        it from the `products` app. Learned how to move models between apps (if
+        any were initially placed elsewhere) and update imports and migrations
+        accordingly.
+    * Implemented serializers for models with Foreign Key relationships and nested
+        representations (`CartSerializer` including `CartItemSerializer`,
+        `CartItemSerializer` including `ProductSerializer`).
+    * Used `PrimaryKeyRelatedField` with `write_only=True` to handle foreign key
+        assignment (like adding a product to a cart item) based on a provided ID
+        in the incoming data.
+    * Developed custom API views (`APIView`) and overrode `ModelViewSet` methods
+        for specific logic related to the cart (e.g., adding/updating item quantity,
+        filtering the queryset to show only the current user's cart, validating
+        quantity on update).
+    * Used `transaction.atomic` for database integrity during complex add/update
+        operations involving multiple database changes.
+    * Configured URLs for complex API structures using `DefaultRouter` and explicit
+        `path` mappings to handle different cart actions.
+    * Practiced testing authenticated API endpoints related to the cart using
+        Insomnia/curl.
+    * Debugged Django/DRF errors related to model managers, serializer Meta classes,
+        and
 
 ---
