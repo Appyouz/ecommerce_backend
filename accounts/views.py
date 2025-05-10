@@ -1,11 +1,11 @@
-from typing import override
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serialzers import UserSerializer
 from dj_rest_auth.views import LoginView, LogoutView
-
+from .authentication import JWTCookieAuthentication
+from django.conf import settings
 
 class Home(APIView):
     # authentication_classes = [JWTAuthentication]
@@ -18,7 +18,6 @@ class Home(APIView):
 class CustomLoginView(LoginView):
     permission_classes = [AllowAny]
     
-    @override
     def get_response(self):
 
         response = super().get_response()
@@ -34,3 +33,33 @@ class CustomLoginView(LoginView):
 
 class CustomLogoutView(LogoutView):
     pass
+
+
+class GetAccessTokenView(APIView):
+    """
+    API endpoint to retrieve a valid access token string from the HttpOnly cookie.
+    Requires authentication via the HttpOnly cookie.
+    """
+    authentication_classes = [JWTCookieAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Handles GET requests. If the request reaches here, the user is
+        authenticated by the HttpOnly cookie. We return the access token.
+        """
+
+        access_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE'])
+
+        if access_token:
+            return Response({'access_token': access_token}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {'detail': 'Authentication successful, but could not retrieve access token from cookies.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+
+
+
