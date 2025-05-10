@@ -165,8 +165,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
@@ -200,8 +201,14 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
+    'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
+    'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
+    
     'JWT_AUTH_COOKIE_SECURE': False, # Ensure this is False for http
     'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
+
+    'JWT_AUTH_COOKIE_SAMESITE': 'Lax',
+    'JWT_AUTH_COOKIE_PATH': '/',
 }
 
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
