@@ -452,3 +452,92 @@
         and
 
 ---
+
+## 2025-05-08 - Frontend Cart - Add to Cart Button & Token Retrieval
+
+**General**: Started implementing the "Add to Cart" button on the Product Detail page and connecting it to the backend API. Hit a major roadblock with securely getting the authentication token on the frontend.
+
+### Frontend:
+- Added an "Add to Cart" button to the ProductDetailPage
+- Started implementing the handleAddToCart click handler
+- Created the addItemToCart service function in product-service.ts to make the POST request to /api/cart/items/
+
+**Problem**: Realized the addItemToCart function needed the JWT access token string for the Authorization: Bearer header, but the token is in an HttpOnly cookie and not directly accessible by client-side JavaScript.
+
+**Learning**: Understood the security implications of HttpOnly cookies and why the token string isn't directly available on the client side. Realized a secure method is needed to retrieve the token for API headers.
+
+### Backend:
+**Solution**: Created a new backend API endpoint (GET /auth/get-token/) in the accounts app. This endpoint:
+- Is called by the authenticated frontend (cookie is sent automatically)
+- Reads the token from the HttpOnly cookie
+- Returns the token string in the response body
+
+Added the corresponding URL pattern in accounts/urls.py.
+
+**Learning**: Learned the standard and secure pattern for providing the JWT token string to the frontend when using HttpOnly cookies by creating a dedicated backend endpoint.
+
+---
+
+## 2025-05-09 - Debugging Token Retrieval & Custom Authentication
+
+**General**: Spent the day debugging issues with the new backend token retrieval endpoint, which was preventing the "Add to Cart" functionality from working.
+
+### Frontend:
+- Updated the getAuthToken function in auth.ts to call the new backend GET /auth/get-token/ endpoint
+- Updated addItemToCart in product-service.ts to use the getAuthToken function
+- Updated ProductDetailPage to call the addItemToCart service
+
+**Problems**:
+1. Testing the GET /auth/get-token/ endpoint resulted in 401 Unauthorized errors
+2. Got "detail": "Method \"GET\" not allowed." for the GET request
+
+### Backend:
+**Solution**: Created a custom JWTCookieAuthentication class that:
+- Inherits from JWTAuthentication
+- Explicitly checks request.COOKIES for the token first
+- Updated settings.py to include AUTH_COOKIE in SIMPLE_JWT
+
+**Learning**: Gained deep understanding of how JWT authentication works with HttpOnly cookies in Django/DRF.
+
+---
+
+## 2025-05-10 - Frontend Auth - Login Fix & Cart Page (Fetch/Display)
+
+**General**: Fixed a bug in the login form and successfully implemented the frontend Cart Page.
+
+### Frontend:
+**Problem**: Login form threw TypeError: user is undefined on loginSuccess(user)
+
+**Solution**: Updated handleSubmit to call fetchAuthenticatedUser() after login
+
+**Cart Page Implementation**:
+- Created CartPage component (app/cart/page.tsx)
+- Created cart-service.ts with fetchCart function
+- Implemented useEffect in CartPage to call fetchCart()
+- Added loading states, error handling, and cart display logic
+
+**Learning**: Learned to debug frontend errors by tracing undefined values and creating new page components.
+
+---
+
+## 2025-05-11 - Frontend Cart - Update/Remove & Debugging
+
+**General**: Implemented functionality to update item quantities and remove items from cart.
+
+### Frontend:
+- Added updateCartItemQuantity and removeCartItem functions to cart-service.ts
+- Added quantity controls (+/- buttons) and Remove button to CartPage
+- Implemented handlers for updating and removing items
+- Added local state updates after successful API calls
+
+**Problems**:
+1. Number input for quantity behaved erratically → switched to +/- buttons
+2. Remove button caused 500 Internal Server Error
+
+### Backend:
+**Solution**: The 500 error was due to missing trailing slash in DELETE request URL. Fixed by adding trailing slash in removeCartItem function.
+
+**Learning**: Gained experience with:
+- Updating/deleting items in a list
+- Handling UI state during async operations
+- Debugging frontend-triggered backend errors
