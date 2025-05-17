@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.contrib import messages
 from .models import Order, OrderItem
+
+
 
 # TabularInline displays related objects in a table format
 class OrderItemInline(admin.TabularInline):
@@ -41,6 +44,24 @@ class OrderAdmin(admin.ModelAdmin):
             'classes': ('collapse',), # Optional: collapse this section
         }),
     )
+    
+    def mark_as_processing(self, request, queryset):
+        """
+        Admin action to mark selected orders as 'Processing'.
+        """
+        updated_count = queryset.update(status='Processing')
+
+        if updated_count == 1:
+            message = "1 order was successfully marked as Processing."
+        else:
+            message = f"{updated_count} orders were successfully marked as Processing."
+        
+        self.message_user(request, message, messages.SUCCESS) 
+
+        
+    mark_as_processing.short_description = "Mark selected orders as Processing"
+    actions = [mark_as_processing]
+
 
 
 #Customize OrderItem Admin Display 
