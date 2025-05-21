@@ -1,7 +1,9 @@
-from rest_framework import viewsets
+from django_filters import filterset
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Viewset for the cateogry model
 # Provides CRUD operations for categories
@@ -21,6 +23,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('name')
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    # filter backends
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['category']
+    search_fields = ['name', 'description']
 
     # Method called when creating a new object
 
