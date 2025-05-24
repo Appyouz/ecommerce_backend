@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'corsheaders',
+    'pytest_django',
 
     'accounts.apps.AccountsConfig',
     'products.apps.ProductsConfig',
