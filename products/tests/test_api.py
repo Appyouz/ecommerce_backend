@@ -41,3 +41,20 @@ def test_product_list(client):
     assert data[0]['name'] == 'Laptop'
     assert data[1]['name'] == 'Mouse'
 
+@pytest.mark.django_db
+def test_create_product_unauthenticated(client):
+    """
+    Test that an unauthenticated user cannot create a product.
+    """
+    category = Category.objects.create(name='Books')
+    product_data = {
+        'name': 'The Test Book',
+        'description': 'A book for testing.',
+        'price': 9.99,
+        'stock': 10,
+        'category_id': category.id,
+    }
+
+    response = client.post('/api/products/', data=product_data)
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert Product.objects.count() == 0
