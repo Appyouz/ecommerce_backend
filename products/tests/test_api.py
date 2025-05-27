@@ -1,0 +1,43 @@
+import pytest
+from rest_framework import status
+from products.models import Product, Category
+
+
+@pytest.mark.django_db # Always need this if interacting with the database
+def test_product_list(client):
+    """
+    Test that the product list API endpoint returns a 200 OK status.
+    """
+    Category.objects.create(name='Electronics')
+    Product.objects.create(
+        name='Laptop',
+        description="Zephyrus",
+        price=1500.00,
+        stock=50,
+        category=Category.objects.first()
+    )
+
+    Product.objects.create(
+        name="Mouse",
+        description="Gaming mouse",
+        price=250.00,
+        stock=100,
+        category=Category.objects.first()
+    )
+
+    # Make a GET request to the produt list endpoint
+    response = client.get('/api/products/')
+
+    # Assert or verfiy
+    # First check the status code (200)ok
+    assert response.status_code == status.HTTP_200_OK
+
+    # Second, check the content of the response. It should be a JSON array
+    data = response.json()
+    assert isinstance(data, list) # check if its a list for multiple products
+    assert len(data) == 2 # check if the no.of products from above were created
+
+    # We ordered by 'name' in ProductViewSet, so 'Laptop' should come before 'Mouse'.
+    assert data[0]['name'] == 'Laptop'
+    assert data[1]['name'] == 'Mouse'
+
