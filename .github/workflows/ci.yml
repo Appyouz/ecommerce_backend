@@ -15,6 +15,7 @@ jobs:
   build_and_test:
     # Specify the operating system for the runner (virtual machine)
     runs-on: ubuntu-latest
+    environment: actions  
 
     # Steps define the sequence of tasks to be executed in the job
     steps:
