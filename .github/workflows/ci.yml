@@ -34,8 +34,7 @@ jobs:
         tags: latest # Tag the image as 'latest'
         registry: docker.io # The registry URL for Docker Hub
         dockerfile: Dockerfile # Your Dockerfile is named 'Dockerfile' not 'Dockerfile.ci'
-        username: ${{ secrets.DOCKER_USERNAME }} # New secret name
-        password: ${{ secrets.DOCKER_PASSWORD }} # New secret name
+        username: ${{ secrets.DOCKER_USERNAME }} 
 
     - name: Run Django Tests in Docker Container # Execute tests inside the built image
       # This step starts a temporary container from the image built above.
