@@ -1,6 +1,7 @@
-
 name: CI for Django Backend
 
+# This workflow runs on every push to the 'main' branch
+# and on pull requests targeting the 'main' branch.
 on:
   push:
     branches:
@@ -9,38 +10,53 @@ on:
     branches:
       - main
 
+# Define the jobs to be executed in this workflow
 jobs:
   build_and_test:
+    # Specify the operating system for the runner (virtual machine)
     runs-on: ubuntu-latest
+
+    # Steps define the sequence of tasks to be executed in the job
     steps:
-    - name: Checkout code
+    - name: Checkout code # Step to get your repository's code
       uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
+    - name: Set up Docker Buildx # Recommended for efficient Docker builds
       uses: docker/setup-buildx-action@v3
 
-    # Log in to Docker Hub (Manual Login via docker cli)
-    # This method is often more robust for stubborn login issues.
+    # Log in to Docker Hub: This step uses your GitHub Secrets
     - name: Log in to Docker Hub
-      run: |
-        echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-      env:
-        DOCKER_CLI_HINTS: false # Suppress unnecessary Docker CLI hints in logs
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-    - name: Build Docker image for Backend
+    - name: Build Docker image for Backend # Build the Django application image
+      # The context ('.') is the current directory (ecommerce_backend).
+      # The Dockerfile is located at ./Dockerfile.
+      # We tag the image with your Docker Hub username and repository name
+      # e.g., your_docker_hub_username/ecommerce-backend:latest
+      # --load ensures the image is available for subsequent steps (like tests)
       run: |
         IMAGE_NAME=${{ secrets.DOCKER_HUB_USERNAME }}/ecommerce-backend
         docker build -t ${IMAGE_NAME}:latest --load .
 
-    - name: Run Django Tests in Docker Container
+    - name: Run Django Tests in Docker Container # Execute tests inside the built image
       run: |
         IMAGE_NAME=${{ secrets.DOCKER_HUB_USERNAME }}/ecommerce-backend
+        # Start a temporary PostgreSQL container for tests
+        # This provides a clean database environment for each test run.
         docker run -d --name temp_db_for_tests \
           -e POSTGRES_DB=test_db \
           -e POSTGRES_USER=test_user \
           -e POSTGRES_PASSWORD=test_password \
           postgres:16-alpine
 
+        # Run Django tests inside the backend container, linking to the temp DB.
+        # --rm automatically removes the container after it exits.
+        # --link creates a network alias 'db' for the PostgreSQL container,
+        # allowing Django to connect to 'db' as its host.
+        # Environment variables are passed to the backend container for Django's settings.
         docker run --rm \
           --link temp_db_for_tests:db \
           -e DB_NAME=test_db \
@@ -50,10 +66,11 @@ jobs:
           -e DB_PORT=5432 \
           ${IMAGE_NAME}:latest python manage.py test
 
+        # Clean up the temporary database container (stops and removes it)
         docker stop temp_db_for_tests
         docker rm temp_db_for_tests
 
-    - name: Push Docker image to Docker Hub
+    - name: Push Docker image to Docker Hub # Push the successfully built and tested image
       run: |
         IMAGE_NAME=${{ secrets.DOCKER_HUB_USERNAME }}/ecommerce-backend
         docker push ${IMAGE_NAME}:latest
