@@ -72,4 +72,4 @@ jobs:
     - name: Push Docker image to Docker Hub # Push the successfully built and tested image
       run: |
         IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
-        docker push ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}:latest 
