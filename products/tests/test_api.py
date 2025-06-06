@@ -1,4 +1,5 @@
 import pytest
+import json
 from rest_framework import status
 from products.models import Product, Category
 from rest_framework_simplejwt.tokens import AccessToken
@@ -140,3 +141,51 @@ def test_retrieve_product_by_id(client):
     assert float(response_data['price']) == float(product_to_retrieve.price)
     assert response_data['stock'] == product_to_retrieve.stock
     assert response_data['category']['id'] == category.id # DRF often serializes FKs as IDs by default
+
+
+@pytest.mark.django_db
+def test_update_product_authenticated(client):
+    """
+    Test that an authenticated user can update a product using PATCH.
+    """
+    # Arrange (Setup):
+    category = Category.objects.create(name='Original Category')
+    product_to_update = Product.objects.create(
+        name='Original Name',
+        description='Original Description',
+        price=10.00,
+        stock=100,
+        category=category
+    )
+
+    user = User.objects.create_user(username='updateruser', password='updaterpassword123')
+    access_token = str(AccessToken.for_user(user))
+    headers = {
+        'HTTP_AUTHORIZATION': f'Bearer {access_token}',
+    }
+
+    # Data for partial update
+    updated_data = {
+        'name': 'Updated Name',
+        'price': 15.50,
+    }
+
+    response = client.patch(
+        f'/api/products/{product_to_update.id}/',
+        data=json.dumps(updated_data), # Data is now a JSON string
+        content_type='application/json', 
+        **headers 
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    product_to_update.refresh_from_db()
+
+    assert product_to_update.name == updated_data['name']
+    assert float(product_to_update.price) == updated_data['price'] 
+
+    assert product_to_update.description == 'Original Description' 
+
+    response_data = response.json()
+    assert response_data['name'] == updated_data['name']
+    assert float(response_data['price']) == updated_data['price']
