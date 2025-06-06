@@ -1,5 +1,8 @@
-name: CI for Django Backend 
 
+name: CI for Django Backend
+
+# This workflow runs on every push to the 'main' branch
+# and on pull requests targeting the 'main' branch.
 on:
   push:
     branches:
@@ -8,50 +11,51 @@ on:
     branches:
       - main
 
+# Define the jobs to be executed in this workflow
 jobs:
   build_and_test:
+    # Specify the operating system for the runner (virtual machine)
     runs-on: ubuntu-latest
+
+    # Steps define the sequence of tasks to be executed in the job
     steps:
-    - name: Checkout code
+    - name: Checkout code # Step to get your repository's code
       uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
+    - name: Set up Docker Buildx # Recommended for efficient Docker builds
       uses: docker/setup-buildx-action@v3
 
-    - name: Check if secrets are set
-      run: |
-        if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then
-          echo "DOCKER_HUB_USERNAME is not set"
-        else
-          echo "DOCKER_HUB_USERNAME is set"
-        fi
-        if [ -z "${{ secrets.DOCKER_HUB_TOKEN }}" ]; then
-          echo "DOCKER_HUB_TOKEN is not set"
-        else
-          echo "DOCKER_HUB_TOKEN is set"
-        fi
-
+    # Log in to Docker Hub using the official action.
+    # This action directly consumes the username and password from secrets.
     - name: Log in to Docker Hub
-      if: github.event_name != 'pull_request' || github.repository == github.event.pull_request.head.repo.full_name
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        username: ${{ secrets.DOCKER_USERNAME }} # Refers to the GitHub Secret named DOCKER_USERNAME
+        password: ${{ secrets.DOCKER_PASSWORD }} # Refers to the GitHub Secret named DOCKER_PASSWORD
+        registry: docker.io # Explicitly specify Docker Hub registry
 
-    - name: Build Docker image for Backend
+    - name: Build Docker image for Backend # Build the Django application image
+      # The image name includes your Docker Hub username for correct tagging.
       run: |
-        docker build -t ecommerce-backend:latest . --load
+        IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
+        docker build -t ${IMAGE_NAME}:latest --load .
 
-    - name: Run Django Tests in Docker Container
+    - name: Run Django Tests in Docker Container # Execute tests inside the built image
       run: |
-        # Start a temporary PostgreSQL container for tests
+        IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
+        # Start a temporary PostgreSQL container for tests.
+        # This provides a clean, isolated database for each test run.
         docker run -d --name temp_db_for_tests \
           -e POSTGRES_DB=test_db \
           -e POSTGRES_USER=test_user \
           -e POSTGRES_PASSWORD=test_password \
           postgres:16-alpine
 
-        # Run Django tests inside the backend container, linking to the temp DB
+        # Run Django tests inside the backend container.
+        # --rm automatically removes the container after it exits.
+        # --link creates a network alias 'db' for the PostgreSQL container,
+        # allowing your Django app to connect to 'db' as its database host.
+        # Environment variables are passed to the backend container for Django's settings.
         docker run --rm \
           --link temp_db_for_tests:db \
           -e DB_NAME=test_db \
@@ -59,15 +63,13 @@ jobs:
           -e DB_PASSWORD=test_password \
           -e DB_HOST=db \
           -e DB_PORT=5432 \
-          ecommerce-backend:latest python manage.py test
+          ${IMAGE_NAME}:latest python manage.py test
 
-        # Clean up the temporary database container
+        # Clean up the temporary database container (stops and removes it)
         docker stop temp_db_for_tests
         docker rm temp_db_for_tests
 
-    - name: Tag and Push Docker image to Docker Hub
-      if: github.event_name != 'pull_request' || github.repository == github.event.pull_request.head.repo.full_name
+    - name: Push Docker image to Docker Hub # Push the successfully built and tested image
       run: |
-        DOCKER_HUB_IMAGE=${{ secrets.DOCKER_HUB_USERNAME }}/ecommerce-backend:latest
-        docker tag ecommerce-backend:latest ${DOCKER_HUB_IMAGE}
-        docker push ${DOCKER_HUB_IMAGE}
+        IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
+        docker push ${IMAGE_NAME}:latest
