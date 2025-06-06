@@ -30,7 +30,7 @@ jobs:
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        password-stdin: ${{ secrets.DOCKER_HUB_TOKEN }}
 
     - name: Build Docker image for Backend # Build the Django application image
       # The context ('.') is the current directory (ecommerce_backend).
