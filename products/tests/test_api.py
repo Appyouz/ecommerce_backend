@@ -189,3 +189,36 @@ def test_update_product_authenticated(client):
     response_data = response.json()
     assert response_data['name'] == updated_data['name']
     assert float(response_data['price']) == updated_data['price']
+
+
+@pytest.mark.django_db
+def test_update_product_unauthenticated(client):
+    """
+    Test that an unauthenticated user cannot update a product.
+    """
+    # Arrange (Setup):
+    category = Category.objects.create(name='Unauth Category')
+    original_price = 20.00
+    product_to_update = Product.objects.create(
+        name='Unauth Update Product',
+        description='Original description.',
+        price=original_price,
+        stock=50,
+        category=category
+    )
+
+    updated_data = {
+        'price': 999.99, 
+    }
+
+    response = client.patch(
+        f'/api/products/{product_to_update.id}/',
+        data=json.dumps(updated_data),
+        content_type='application/json'
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED # Or 403, depending on your DRF auth stack
+
+    product_to_update.refresh_from_db()
+    assert product_to_update.price == original_price 
+
