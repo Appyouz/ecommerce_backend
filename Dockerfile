@@ -1,5 +1,5 @@
 # base image start from an official python package
-FROM python:3.9-slim-buster
+FROM python:3.11-slim-buster
 
 # Set Environment variables
 ENV PYTHONUNBUFFERED 1
@@ -8,8 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Set working directory
 WORKDIR /app
 
+COPY requirements.txt ./
+
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r ./requirements.txt
 
 # Copy application code
 COPY . /app/
