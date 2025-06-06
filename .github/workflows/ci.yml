@@ -1,4 +1,4 @@
-name: CI for Django Backend
+name: CI for Django Backend 
 
 on:
   push:
