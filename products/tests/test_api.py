@@ -222,3 +222,30 @@ def test_update_product_unauthenticated(client):
     product_to_update.refresh_from_db()
     assert product_to_update.price == original_price 
 
+
+@pytest.mark.django_db
+def test_delete_product_authenticated(client):
+    """
+    Test that an authenticated user can delete a product.
+    """
+    category = Category.objects.create(name='Delete Category')
+    product_to_delete = Product.objects.create(
+        name='Product for Deletion Test',
+        description='This product will be deleted.',
+        price=50.00,
+        stock=10,
+        category=category
+    )
+
+    user = User.objects.create_user(username='deleteruser', password='deleterpassword123')
+    access_token = str(AccessToken.for_user(user))
+    headers = {
+        'HTTP_AUTHORIZATION': f'Bearer {access_token}',
+    }
+
+    response = client.delete(f'/api/products/{product_to_delete.id}/', **headers)
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    assert Product.objects.count() == 0 # Should be zero after deletion
+    assert not Product.objects.filter(id=product_to_delete.id).exists() # More specific check
