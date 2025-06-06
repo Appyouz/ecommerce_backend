@@ -21,7 +21,9 @@ env = environ.Env(
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-environ.Env.read_env(env_file=str(BASE_DIR / ".env"))
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+environ.Env.read_env(env_file=str(ROOT_DIR / ".env"))
+# environ.Env.read_env(env_file=str(BASE_DIR / ".env"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -118,7 +120,11 @@ WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # PostgreSQL
 DATABASES = {
-    "default": env.db()
+    # "default": env.db()
+    "default": env.db(
+        'DATABASE_URL',
+        default=f'postgres://{env("DB_USER")}:{env("DB_PASSWORD")}@{env("DB_HOST")}:{env("DB_PORT")}/{env("DB_NAME")}'
+    )
 }
 
 # Password validation
