@@ -105,3 +105,38 @@ def test_create_product_authenticated(client):
     assert response_data['name'] == product_data['name']
     assert float(created_product.price) == product_data['price']
     assert response_data['price'] == str(product_data['price'])
+
+
+@pytest.mark.django_db 
+def test_retrieve_product_by_id(client):
+    """
+    Test that an authenticated user can retrieve a single product by ID.
+    """
+    category = Category.objects.create(name='Electronics')
+    product_to_retrieve = Product.objects.create(
+        name='Product for Retrieval Test',
+        description='This product will be retrieved.',
+        price=99.99,
+        stock=5,
+        category=category
+    )
+
+    user = User.objects.create_user(username='retrieveruser', password='retrieverpassword123')
+    access_token = str(AccessToken.for_user(user))
+    headers = {
+        'HTTP_AUTHORIZATION': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    response = client.get(f'/api/products/{product_to_retrieve.id}/', **headers)
+
+    assert response.status_code == status.HTTP_200_OK
+    response_data = response.json()
+
+    assert response_data['id'] == product_to_retrieve.id
+    assert response_data['name'] == product_to_retrieve.name
+    assert response_data['description'] == product_to_retrieve.description
+    # Convert Decimal to float for comparison, or assert against string if DRF serializes that way
+    assert float(response_data['price']) == float(product_to_retrieve.price)
+    assert response_data['stock'] == product_to_retrieve.stock
+    assert response_data['category']['id'] == category.id # DRF often serializes FKs as IDs by default
