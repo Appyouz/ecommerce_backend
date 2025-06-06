@@ -35,7 +35,6 @@ jobs:
         registry: docker.io # The registry URL for Docker Hub
         dockerfile: Dockerfile # Your Dockerfile is named 'Dockerfile' not 'Dockerfile.ci'
         username: ${{ secrets.DOCKER_USERNAME }} 
-
     - name: Run Django Tests in Docker Container # Execute tests inside the built image
       # This step starts a temporary container from the image built above.
       # The image is now tagged with your Docker Hub username by the previous step.
