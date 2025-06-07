@@ -213,23 +213,34 @@ CSRF_COOKIE_SAMESITE = 'None'   # Allows CSRF cookie to be sent cross-site
 
 
 from datetime import timedelta
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+#     'ROTATE_REFRESH_TOKENS': True,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#
+#     'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
+#     'AUTH_COOKIE_DOMAIN': None,
+#     'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
+#     'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
+#
+#     'JWT_AUTH_COOKIE_SAMESITE': 'None',
+#     'JWT_AUTH_COOKIE_PATH': '/',
+# }
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
-    'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
-    'AUTH_COOKIE_DOMAIN': None,
-    'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
-    
-    'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
-    'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
-
-    'JWT_AUTH_COOKIE_SAMESITE': 'None',
-    'JWT_AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE': 'jwt-auth',          # Name of the cookie for the access token
+    'AUTH_COOKIE_DOMAIN': None,         # Domain for the cookie (None for current domain)
+    'AUTH_COOKIE_SECURE': True,         # Requires HTTPS (must be True for SameSite=None)
+    'AUTH_COOKIE_HTTP_ONLY': True,      # Prevents JavaScript access to the cookie
+    'AUTH_COOKIE_SAMESITE': 'None',     # Allows cross-site usage
+    'AUTH_COOKIE_PATH': '/',            # Cookie available site-wide
 }
-
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_SIGNUP_FIELDS = {'email*', 'username*', 'password1*', 'password2*'}
 ACCOUNT_LOGIN_METHODS = ['username', 'email']
