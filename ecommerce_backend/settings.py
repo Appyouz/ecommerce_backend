@@ -182,7 +182,7 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     'USE_JWT': True,
 
-    'JWT_AUTH_COOKIE': 'jwt-auth',
+    'JWT_AUTH_COOKIE': 'None',
 
     'JWT_AUTH_REFRESH_COOKIE': 'refresh-token', # Explicitly set the name
     
@@ -234,7 +234,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
-    'AUTH_COOKIE': 'jwt-auth',          # Name of the cookie for the access token
+    'AUTH_COOKIE': 'None',          # Name of the cookie for the access token
     'AUTH_COOKIE_DOMAIN': None,         # Domain for the cookie (None for current domain)
     'AUTH_COOKIE_SECURE': True,         # Requires HTTPS (must be True for SameSite=None)
     'AUTH_COOKIE_HTTP_ONLY': True,      # Prevents JavaScript access to the cookie
