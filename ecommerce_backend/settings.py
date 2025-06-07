@@ -36,8 +36,7 @@ SECRET_KEY = env('SECRET_KEY')
 # DEBUG = False
 # For production
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
 
 # Application definition
 
