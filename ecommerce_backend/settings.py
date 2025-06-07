@@ -202,6 +202,16 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+
+# Cookie settings for cross-site (frontend on Vercel, backend on Render)
+SESSION_COOKIE_SECURE = True # Ensures session cookie is only sent over HTTPS
+CSRF_COOKIE_SECURE = True   # Ensures CSRF cookie is only sent over HTTPS
+SESSION_COOKIE_SAMESITE = 'None' # Allows session cookie to be sent cross-site
+CSRF_COOKIE_SAMESITE = 'None'   # Allows CSRF cookie to be sent cross-site
+
+
+
+
 from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -210,6 +220,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 
     'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
+    'AUTH_COOKIE_DOMAIN': None,
     'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
     
     'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
