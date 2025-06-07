@@ -39,5 +39,8 @@ EXPOSE 8000
 
 # Define the command to run the application using Gunicorn
 # Using python -m for robustness
-# CMD ["python", "-m", "gunicorn", "ecommerce_backend.wsgi:application", "--bind", "0.0.0.0:${PORT:-8000}"]
-CMD python manage.py migrate --noinput && python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+# CMD python manage.py migrate --noinput && python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+
+CMD python manage.py migrate --noinput && \
+    python manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); username='admin'; email='admin@gmail.com'; password='123456789'; user, created = User.objects.get_or_create(username=username, email=email); user.set_password(password); user.is_superuser=True; user.is_staff=True; user.save(); print('Superuser created or updated:', user.username, 'Password set:', password)" && \
+    python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
