@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: ecommerce_backend 
+    env: python
+    
+
+    dockerfilePath: Dockerfile 
+    rootDir: . 
+    plan: free 
+
+    # Environment variables for RUNTIME only (if you need specific ones not passed as buildArgs)
+    # Render will automatically inject PORT.
+    envVars:
+      # You can add other runtime-specific env vars here if needed
+      # For now, SECRET_KEY, DATABASE_URL, DEBUG are handled by buildArgs
+      # and will be available at runtime because of the ENV instructions in Dockerfile.
+
+    # Build Arguments: These are passed to your Dockerfile's ARG instructions during build.
+    # Render will pull values for ${SECRET_KEY} and ${DATABASE_URL} from your Render dashboard's
+    # service environment variables.
+    buildArgs:
+      - key: SECRET_KEY
+        value: ${SECRET_KEY}
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+      - key: DEBUG_BUILD # This maps to ARG DEBUG_BUILD in your Dockerfile
+        value: "False" # Ensure DEBUG is False for the build and runtime
