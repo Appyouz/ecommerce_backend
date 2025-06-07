@@ -215,7 +215,7 @@ SIMPLE_JWT = {
     'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
     'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
 
-    'JWT_AUTH_COOKIE_SAMESITE': 'Lax',
+    'JWT_AUTH_COOKIE_SAMESITE': 'None',
     'JWT_AUTH_COOKIE_PATH': '/',
 }
 
