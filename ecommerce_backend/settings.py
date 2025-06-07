@@ -28,15 +28,14 @@ environ.Env.read_env(env_file=str(ROOT_DIR / ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i9!6s33w7x6n*+6n5$dyz=omhe^2o@_@tigsom0vh)_w#ko)(h'
 
 # for production
-# SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = False
 # For production
-# DEBUG = env('DEBUG')
+DEBUG = env('DEBUG')
 ALLOWED_HOSTS = []
 
 
@@ -120,11 +119,11 @@ WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 # PostgreSQL
 DATABASES = {
-    # "default": env.db()
-    "default": env.db(
-        'DATABASE_URL',
-        default=f'postgres://{env("DB_USER")}:{env("DB_PASSWORD")}@{env("DB_HOST")}:{env("DB_PORT")}/{env("DB_NAME")}'
-    )
+    "default": env.db("DATABASE_URL") 
+    # "default": env.db(
+    #     'DATABASE_URL',
+    #     default=f'postgres://{env("DB_USER")}:{env("DB_PASSWORD")}@{env("DB_HOST")}:{env("DB_PORT")}/{env("DB_NAME")}'
+    # )
 }
 
 # Password validation
@@ -162,6 +161,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -213,7 +213,7 @@ SIMPLE_JWT = {
     'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
     'AUTH_COOKIE_DOMAIN': None,  # A string like "example.com", or None for standard domain cookie.
     
-    'JWT_AUTH_COOKIE_SECURE': False, # Ensure this is False for http
+    'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
     'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
 
     'JWT_AUTH_COOKIE_SAMESITE': 'Lax',
