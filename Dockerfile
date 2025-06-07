@@ -5,6 +5,7 @@ FROM python:3.11-slim-buster
 ARG SECRET_KEY
 ARG DATABASE_URL
 ARG DEBUG_BUILD # Using DEBUG_BUILD to avoid direct conflict if you have a runtime DEBUG var
+ARG DJANGO_ALLOWED_HOSTS
 
 # Set environment variables from build arguments
 # These ENV vars will be available to RUN commands during build (like collectstatic)
@@ -12,6 +13,7 @@ ARG DEBUG_BUILD # Using DEBUG_BUILD to avoid direct conflict if you have a runti
 ENV SECRET_KEY=$SECRET_KEY
 ENV DATABASE_URL=$DATABASE_URL
 ENV DEBUG=$DEBUG_BUILD
+ENV DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS 
 
 # Set other environment variables
 ENV PYTHONUNBUFFERED 1

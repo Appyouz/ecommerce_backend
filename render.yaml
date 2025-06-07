@@ -25,3 +25,5 @@ services:
         value: ${DATABASE_URL}
       - key: DEBUG_BUILD # This maps to ARG DEBUG_BUILD in your Dockerfile
         value: "False" # Ensure DEBUG is False for the build and runtime
+      - key: DJANGO_ALLOWED_HOSTS 
+        value: ${DJANGO_ALLOWED_HOSTS}
