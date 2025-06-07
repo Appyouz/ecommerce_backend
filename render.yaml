@@ -15,6 +15,16 @@ services:
       # For now, SECRET_KEY, DATABASE_URL, DEBUG are handled by buildArgs
       # and will be available at runtime because of the ENV instructions in Dockerfile.
 
+      - key: SECRET_KEY
+        value: ${SECRET_KEY}
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ${DJANGO_ALLOWED_HOSTS}
+      - key: DJANGO_CORS_ALLOWED_ORIGINS
+        value: ${DJANGO_CORS_ALLOWED_ORIGINS}
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+
     # Build Arguments: These are passed to your Dockerfile's ARG instructions during build.
     # Render will pull values for ${SECRET_KEY} and ${DATABASE_URL} from your Render dashboard's
     # service environment variables.
@@ -27,3 +37,6 @@ services:
         value: "False" # Ensure DEBUG is False for the build and runtime
       - key: DJANGO_ALLOWED_HOSTS 
         value: ${DJANGO_ALLOWED_HOSTS}
+      - key: DJANGO_CORS_ALLOWED_ORIGINS
+        value: ${DJANGO_CORS_ALLOWED_ORIGINS}
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
