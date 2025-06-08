@@ -162,15 +162,15 @@ REST_AUTH = {
     'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': False, # Explicitly disable
     'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': False, # Explicitly disable
 
-    # 'LOGIN_VIEW': 'accounts.views.CustomLoginView',
-    # 'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
+    'LOGIN_VIEW': 'accounts.views.CustomLoginView',
+    'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
 
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_GENERATE_TOKEN': True, # Important for JWT logout
 
     # CRUCIAL: Tell dj-rest-auth to use the JWTSerializer to output tokens in the body
     'SERIALIZERS': {
-        'LOGIN_SERIALIZER': 'accounts.serializers.CustomJWTLoginSerializer',
+        'LOGIN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer',
         'TOKEN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer', # Also ensure this for general token handling
     },
 }
