@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 import environ
+from datetime import timedelta
 
 env = environ.Env(
     DEBUG=(bool,False)
@@ -23,23 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 environ.Env.read_env(env_file=str(ROOT_DIR / ".env"))
-# environ.Env.read_env(env_file=str(BASE_DIR / ".env"))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
-# for production
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-# For production
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,10 +80,8 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-
 CORS_ALLOWED_ORIGINS = env.list('DJANGO_CORS_ALLOWED_ORIGINS')
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True # Keep this True for Django's session/CSRF cookies
 
 CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
@@ -112,21 +106,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_backend.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# PostgreSQL
 DATABASES = {
-    "default": env.db("DATABASE_URL") 
-    # "default": env.db(
-    #     'DATABASE_URL',
-    #     default=f'postgres://{env("DB_USER")}:{env("DB_PASSWORD")}@{env("DB_HOST")}:{env("DB_PORT")}/{env("DB_NAME")}'
-    # )
+    "default": env.db("DATABASE_URL")
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -142,59 +127,52 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
-        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        'rest_framework.authentication.SessionAuthentication', # Keep for Django Admin
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # For Bearer tokens
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
 REST_AUTH = {
     'USE_JWT': True,
-
+    # Set JWT cookie settings
     'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
+    'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': False, # Explicitly disable
+    'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': False, # Explicitly disable
 
-    'JWT_AUTH_REFRESH_COOKIE': None, # Explicitly set the name
-    
-    'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': False, # Explicitly True (default)
-    'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': False, # Explicitly True (default)
-    
     'LOGIN_VIEW': 'accounts.views.CustomLoginView',
     'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
 
-    'OLD_PASSWORD_FIELD_ENABLED': True, # Good practice for password change
-    'LOGOUT_GENERATE_TOKEN': True, # Ensure logout endpoint works with JWTs
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_GENERATE_TOKEN': True, # Important for JWT logout
+
+    # CRUCIAL: Tell dj-rest-auth to use the JWTSerializer to output tokens in the body
+    'SERIALIZERS': {
+        'LOGIN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer',
+        'TOKEN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer', # Also ensure this for general token handling
+    },
 }
 
 SITE_ID = 1
@@ -206,49 +184,35 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-
-# Cookie settings for cross-site (frontend on Vercel, backend on Render)
-SESSION_COOKIE_SECURE = True # Ensures session cookie is only sent over HTTPS
-CSRF_COOKIE_SECURE = True   # Ensures CSRF cookie is only sent over HTTPS
-SESSION_COOKIE_SAMESITE = 'None' # Allows session cookie to be sent cross-site
-CSRF_COOKIE_SAMESITE = 'None'   # Allows CSRF cookie to be sent cross-site
-
-
+# Standard Django session and CSRF cookie settings for cross-site
+# These apply to sessionid and csrftoken, not JWTs
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
 
 
-from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    
-    # cookie settings
-    "AUTH_COOKIE": "jwt-auth",
-    "AUTH_COOKIE_REFRESH": "jwt-refresh",
-    "AUTH_COOKIE_DOMAIN": None,  # Optional, or set backend domain
-    "AUTH_COOKIE_SECURE": True,  # Very important for cross-site!
-    "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "None",  # VERY IMPORTANT for cross-site
+    'ROTATE_REFRESH_TOKENS': True, # Important for security, enables refresh token rotation
+    'BLACKLIST_AFTER_ROTATION': True, # Invalidates old refresh tokens upon use
+
 
     # This ensures tokens are expected in the Authorization header
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
     'JTI_CLAIM': 'jti',
     'USER_ID_CLAIM': 'user_id',
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1), # If using sliding tokens
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5), # If using sliding tokens
-
-
-
 }
+
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_SIGNUP_FIELDS = ['email', 'username', 'password1', 'password2']
 ACCOUNT_LOGIN_METHODS = ['username', 'email']
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-
 
 # MEDIA FILES SETTINGS
 MEDIA_ROOT = BASE_DIR / 'media'
