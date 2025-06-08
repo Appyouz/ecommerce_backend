@@ -162,8 +162,8 @@ REST_AUTH = {
     'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': False, # Explicitly disable
     'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': False, # Explicitly disable
 
-    'LOGIN_VIEW': 'accounts.views.CustomLoginView',
-    'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
+    # 'LOGIN_VIEW': 'accounts.views.CustomLoginView',
+    # 'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
 
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_GENERATE_TOKEN': True, # Important for JWT logout
