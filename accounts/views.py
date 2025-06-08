@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer 
+from .serialzers import UserSerializer
 from dj_rest_auth.views import LoginView, LogoutView
 from rest_framework_simplejwt.tokens import RefreshToken # <--- NEW IMPORT
 from django.conf import settings 
