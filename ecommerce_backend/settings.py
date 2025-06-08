@@ -220,19 +220,20 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-
-    'AUTH_COOKIE': None,          # Name of the cookie for the access token
-    'AUTH_COOKIE_DOMAIN': None,         # Domain for the cookie (None for current domain)
-    'AUTH_COOKIE_SECURE': True,         # Requires HTTPS (must be True for SameSite=None)
-    'AUTH_COOKIE_HTTP_ONLY': True,      # Prevents JavaScript access to the cookie
-    'AUTH_COOKIE_SAMESITE': 'None',     # Allows cross-site usage
-    'AUTH_COOKIE_PATH': '/',            # Cookie available site-wide
-
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    
+    # cookie settings
+    "AUTH_COOKIE": "jwt-auth",
+    "AUTH_COOKIE_REFRESH": "jwt-refresh",
+    "AUTH_COOKIE_DOMAIN": None,  # Optional, or set backend domain
+    "AUTH_COOKIE_SECURE": True,  # Very important for cross-site!
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "None",  # VERY IMPORTANT for cross-site
 
     # This ensures tokens are expected in the Authorization header
-    'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
     'JTI_CLAIM': 'jti',

@@ -7,5 +7,5 @@ urlpatterns = [
     # path('login/', CustomLoginView.as_view(), name='rest_login'),
     # path('logout/', CustomLogoutView.as_view(), name='rest_logout'),
 
-    path('auth/get-token/', GetAccessTokenView.as_view(), name='get-access-token'),
+    # path('auth/get-token/', GetAccessTokenView.as_view(), name='get-access-token'),
 ]
