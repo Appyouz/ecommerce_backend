@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'allauth',
@@ -174,7 +175,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
@@ -182,15 +183,18 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     'USE_JWT': True,
 
-    'JWT_AUTH_COOKIE': 'None',
+    'JWT_AUTH_COOKIE': None,
 
-    'JWT_AUTH_REFRESH_COOKIE': 'refresh-token', # Explicitly set the name
+    'JWT_AUTH_REFRESH_COOKIE': None, # Explicitly set the name
     
-    'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': True, # Explicitly True (default)
-    'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': True, # Explicitly True (default)
+    'REST_AUTH_JWT_AUTH_COOKIE_ACCESS': False, # Explicitly True (default)
+    'REST_AUTH_JWT_AUTH_COOKIE_REFRESH': False, # Explicitly True (default)
     
     'LOGIN_VIEW': 'accounts.views.CustomLoginView',
     'LOGOUT_VIEW': 'accounts.views.CustomLogoutView',
+
+    'OLD_PASSWORD_FIELD_ENABLED': True, # Good practice for password change
+    'LOGOUT_GENERATE_TOKEN': True, # Ensure logout endpoint works with JWTs
 }
 
 SITE_ID = 1
@@ -213,36 +217,34 @@ CSRF_COOKIE_SAMESITE = 'None'   # Allows CSRF cookie to be sent cross-site
 
 
 from datetime import timedelta
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-#     'ROTATE_REFRESH_TOKENS': True,
-#     'BLACKLIST_AFTER_ROTATION': True,
-#
-#     'AUTH_COOKIE': 'jwt-auth',  # Cookie name. Enables cookies if value is set.
-#     'AUTH_COOKIE_DOMAIN': None,
-#     'JWT_AUTH_COOKIE_SECURE': True, # Ensure this is False for http
-#     'JWT_AUTH_COOKIE_HTTPONLY': True, # Ensure this is True (default)
-#
-#     'JWT_AUTH_COOKIE_SAMESITE': 'None',
-#     'JWT_AUTH_COOKIE_PATH': '/',
-# }
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 
-    'AUTH_COOKIE': 'None',          # Name of the cookie for the access token
+    'AUTH_COOKIE': None,          # Name of the cookie for the access token
     'AUTH_COOKIE_DOMAIN': None,         # Domain for the cookie (None for current domain)
     'AUTH_COOKIE_SECURE': True,         # Requires HTTPS (must be True for SameSite=None)
     'AUTH_COOKIE_HTTP_ONLY': True,      # Prevents JavaScript access to the cookie
     'AUTH_COOKIE_SAMESITE': 'None',     # Allows cross-site usage
     'AUTH_COOKIE_PATH': '/',            # Cookie available site-wide
+
+
+    # This ensures tokens are expected in the Authorization header
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
+    'USER_ID_CLAIM': 'user_id',
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1), # If using sliding tokens
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5), # If using sliding tokens
+
+
+
 }
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
-ACCOUNT_SIGNUP_FIELDS = {'email*', 'username*', 'password1*', 'password2*'}
+ACCOUNT_SIGNUP_FIELDS = ['email', 'username', 'password1', 'password2']
 ACCOUNT_LOGIN_METHODS = ['username', 'email']
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
