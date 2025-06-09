@@ -8,6 +8,7 @@ ARG DEBUG_BUILD # Using DEBUG_BUILD to avoid direct conflict if you have a runti
 ARG DJANGO_ALLOWED_HOSTS
 ARG DJANGO_CORS_ALLOWED_ORIGINS
 ARG DJANGO_CSRF_TRUSTED_ORIGINS
+ARG DJANGO_ENV
 
 # Set environment variables from build arguments
 # These ENV vars will be available to RUN commands during build (like collectstatic)
@@ -18,6 +19,7 @@ ENV DEBUG=$DEBUG_BUILD
 ENV DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS 
 ENV DJANGO_CORS_ALLOWED_ORIGINS=$DJANGO_CORS_ALLOWED_ORIGINS
 ENV DJANGO_CSRF_TRUSTED_ORIGINS=$DJANGO_CSRF_TRUSTED_ORIGINS
+ENV DJANGO_ENV=${DJANGO_ENV}
 
 # Set other environment variables
 ENV PYTHONUNBUFFERED 1
@@ -43,5 +45,7 @@ EXPOSE 8000
 
 # Define the command to run the application using Gunicorn
 # Using python -m for robustness
-CMD python manage.py migrate --noinput && python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+# CMD python manage.py migrate --noinput && python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+CMD python manage.py migrate --noinput && \
+    DJANGO_ENV=production python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
 
