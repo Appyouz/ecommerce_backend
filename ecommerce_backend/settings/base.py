@@ -13,7 +13,7 @@ env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # This BASE_DIR points to the root of your Django project (ecommerce_backend/)
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -162,7 +162,7 @@ REST_AUTH = {
 
     # CRUCIAL: Tell dj-rest-auth to use the JWTSerializer to output tokens in the body
     'SERIALIZERS': {
-        'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+        'LOGIN_SERIALIZER': 'accounts.serializers.CustomJWTLoginSerializer',
         'TOKEN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer',
     },
 }
