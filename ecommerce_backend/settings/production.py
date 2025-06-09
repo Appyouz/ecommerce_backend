@@ -1,7 +1,6 @@
 from .base import * # Import all settings from base.py
 
 DEBUG = False
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -10,14 +9,25 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
 }
 # ALLOWED_HOSTS will be read from environment variables (DJANGO_ALLOWED_HOSTS)
 # in base.py, which will be provided by Render in production.
-
+ALLOWED_HOSTS = [
+    'ecommerce-backend-3rcr.onrender.com',
+    # Add any other production hosts here
+] + env.list('DJANGO_ALLOWED_HOSTS', default=[])
 # DATABASES will be read from environment variables (DATABASE_URL)
 # in base.py, which will be provided by Render in production.
 
