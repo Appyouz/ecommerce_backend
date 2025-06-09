@@ -61,6 +61,11 @@ class CustomLoginView(LoginView):
             # it means login failed, so no tokens should be in response.
             print("DEBUG: CustomLoginView: User not authenticated after super().get_response(). No tokens added.")
 
+        def post(self, request, *args, **kwargs):
+            print("DEBUG: Request data:", request.data)
+            print("DEBUG: Request content type:", request.content_type)
+            return super().post(request, *args, **kwargs)
+
         return response
 
 class CustomLogoutView(LogoutView):
