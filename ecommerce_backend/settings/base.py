@@ -162,7 +162,7 @@ REST_AUTH = {
 
     # CRUCIAL: Tell dj-rest-auth to use the JWTSerializer to output tokens in the body
     'SERIALIZERS': {
-        'LOGIN_SERIALIZER': 'accounts.serializers.CustomJWTLoginSerializer',
+        'LOGIN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer',
         'TOKEN_SERIALIZER': 'dj_rest_auth.jwt_auth.serializers.JWTSerializer',
     },
 }
