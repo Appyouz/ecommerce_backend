@@ -24,10 +24,8 @@ LOGGING = {
 }
 # ALLOWED_HOSTS will be read from environment variables (DJANGO_ALLOWED_HOSTS)
 # in base.py, which will be provided by Render in production.
-ALLOWED_HOSTS = [
-    'ecommerce-backend-3rcr.onrender.com',
-    # Add any other production hosts here
-] + env.list('DJANGO_ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+
 # DATABASES will be read from environment variables (DATABASE_URL)
 # in base.py, which will be provided by Render in production.
 
