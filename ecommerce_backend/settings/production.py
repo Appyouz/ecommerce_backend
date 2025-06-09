@@ -1,27 +1,7 @@
 from .base import * # Import all settings from base.py
 
 DEBUG = False
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.security.DisallowedHost': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
+
 # ALLOWED_HOSTS will be read from environment variables (DJANGO_ALLOWED_HOSTS)
 # in base.py, which will be provided by Render in production.
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
