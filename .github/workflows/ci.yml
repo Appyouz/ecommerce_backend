@@ -99,7 +99,7 @@ jobs:
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment_create.outputs.deployment_id }},
             state: 'success',
-            environment_url: 'YOUR_RENDER_BACKEND_SERVICE_URL', # <-- REPLACE THIS
+            environment_url: 'https://ecommerce-backend-mcp7.onrender.com',
             log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
           });
 
