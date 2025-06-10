@@ -27,10 +27,10 @@ jobs:
             ref: context.ref,
             environment: 'production',
             description: 'Deploying Django backend to Render',
-            auto_merge: false, # Prevent GitHub from trying to merge branches
-            required_contexts: [] # Don't require other status checks
+            auto_merge: false, // Prevent GitHub from trying to merge branches
+            required_contexts: [] // Don't require other status checks
           });
-          core.setOutput('deployment_id', deployment.id); # Store ID for later updates
+          core.setOutput('deployment_id', deployment.id); // Store ID for later updates
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -74,7 +74,7 @@ jobs:
           -e DB_HOST=db \
           -e DB_PORT=5432 \
           -e SECRET_KEY=test-secret-key \
-          -e DEBUG=True \ # For tests, debug can be true
+          -e DEBUG=True \
           -e DJANGO_ENV=testing \
           ${IMAGE_NAME}:latest python manage.py test
 
@@ -99,7 +99,7 @@ jobs:
             repo: context.repo.repo,
             deployment_id: ${{ steps.deployment_create.outputs.deployment_id }},
             state: 'success',
-            environment_url: 'https://ecommerce-backend-mcp7.onrender.com/',
+            environment_url: 'YOUR_RENDER_BACKEND_SERVICE_URL', # <-- REPLACE THIS
             log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
           });
 
