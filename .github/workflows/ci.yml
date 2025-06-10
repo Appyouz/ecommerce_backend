@@ -15,18 +15,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # Create GitHub Deployment (Pending)
+    - name: Create GitHub Deployment
+      uses: actions/github-script@v6
+      id: deployment_create
+      with:
+        script: |
+          const { data: deployment } = await github.rest.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.ref,
+            environment: 'production',
+            description: 'Deploying Django backend to Render',
+            auto_merge: false, # Prevent GitHub from trying to merge branches
+            required_contexts: [] # Don't require other status checks
+          });
+          core.setOutput('deployment_id', deployment.id); # Store ID for later updates
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
     # Log in to Docker Hub (CONDITIONAL LOGIN)
-    # Only log in to Docker Hub if the event is a push to 'main'
-    # OR if it's a pull request from the same repository (not a fork).
-    # This prevents credentials from being exposed in untrusted fork PRs.
     - name: Log in to Docker Hub
       if: github.event_name != 'pull_request' || github.repository == github.event.pull_request.head.repo.full_name
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }} # Use DOCKER_USERNAME/DOCKER_PASSWORD
+        username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.io
 
@@ -35,6 +49,12 @@ jobs:
         IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
         docker build \
           --build-arg SECRET_KEY=unsafe-dev-key-do-not-use-in-prod \
+          --build-arg DATABASE_URL=sqlite:///db.sqlite3 \
+          --build-arg DEBUG_BUILD=False \
+          --build-arg DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1 \
+          --build-arg DJANGO_CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000 \
+          --build-arg DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000 \
+          --build-arg DJANGO_ENV=development \
           -t ${IMAGE_NAME}:latest --load .
 
     - name: Run Django Tests in Docker Container
@@ -53,17 +73,46 @@ jobs:
           -e DB_PASSWORD=test_password \
           -e DB_HOST=db \
           -e DB_PORT=5432 \
+          -e SECRET_KEY=test-secret-key \
+          -e DEBUG=True \ # For tests, debug can be true
+          -e DJANGO_ENV=testing \
           ${IMAGE_NAME}:latest python manage.py test
 
         docker stop temp_db_for_tests
         docker rm temp_db_for_tests
 
     # Push Docker image to Docker Hub (CONDITIONAL PUSH)
-    # Only push if the event is a push to 'main'
-    # OR if it's a pull request from the same repository (not a fork).
-    # This ensures images are only pushed from trusted contexts.
     - name: Push Docker image to Docker Hub
       if: github.event_name != 'pull_request' || github.repository == github.event.pull_request.head.repo.full_name
       run: |
         IMAGE_NAME=${{ secrets.DOCKER_USERNAME }}/ecommerce-backend
         docker push ${IMAGE_NAME}:latest
+
+    # Update GitHub Deployment Status (Success)
+    - name: Update Deployment Status (Success)
+      if: success() # This step runs only if all previous steps succeed
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ steps.deployment_create.outputs.deployment_id }},
+            state: 'success',
+            environment_url: 'https://ecommerce-backend-mcp7.onrender.com/',
+            log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+          });
+
+    # Update GitHub Deployment Status (Failure)
+    - name: Update Deployment Status (Failure)
+      if: failure() # This step runs only if any previous step fails
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ steps.deployment_create.outputs.deployment_id }},
+            state: 'failure',
+            log_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+          });
