@@ -8,6 +8,7 @@ cryptography==44.0.2
 dj-rest-auth==7.0.1
 Django==5.2
 django-allauth==65.7.0
+django-cloudinary-storage==0.3.0
 django-cors-headers==4.7.0
 django-crispy-forms==2.4
 django-environ==0.12.0
