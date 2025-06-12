@@ -10,7 +10,7 @@ services:
     #      python manage.py migrate --noinput
 
     startCommand: |
-      gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:$PORT
+      gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
 
     # Environment variables for runtime
     envVars:
