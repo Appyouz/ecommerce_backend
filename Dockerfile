@@ -44,4 +44,4 @@ EXPOSE 8000
 # Using python -m for robustness
 # CMD python manage.py migrate --noinput && \
 #     DJANGO_ENV=production python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
-CMD ["gunicorn", "ecommerce_backend.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+# CMD ["gunicorn", "ecommerce_backend.wsgi:application", "--bind", "0.0.0.0:${PORT:-8000}"]
