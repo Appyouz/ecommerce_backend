@@ -60,7 +60,7 @@ def test_create_product_unauthenticated(client):
     }
 
     response = client.post('/api/products/', data=product_data)
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     assert Product.objects.count() == 0
 
 @pytest.mark.django_db
@@ -217,7 +217,7 @@ def test_update_product_unauthenticated(client):
         content_type='application/json'
     )
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED # Or 403, depending on your DRF auth stack
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
     product_to_update.refresh_from_db()
     assert product_to_update.price == original_price 
