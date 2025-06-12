@@ -26,6 +26,8 @@ services:
         value: ${DJANGO_CSRF_TRUSTED_ORIGINS}
       - key: DEBUG
         value: "False"
+      - key: CLOUDINARY_URL
+        value: ${CLOUDINARY_URL}
 
     # Build arguments (passed to Dockerfile)
     buildArgs:
@@ -43,3 +45,7 @@ services:
         value: ${DJANGO_CSRF_TRUSTED_ORIGINS}
       - key: DJANGO_ENV
         value: production
+      - key: CLOUDINARY_URL
+        value: ${CLOUDINARY_URL}
+
+
