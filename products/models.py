@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from decimal import Decimal
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -21,7 +22,7 @@ class Product(models.Model):
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0.1)]
+        validators=[MinValueValidator(Decimal(0.1))]
     )
     stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='products/images/', blank=True, null=True)
