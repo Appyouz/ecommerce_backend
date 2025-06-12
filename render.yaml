@@ -8,6 +8,16 @@ services:
     rootDir: . 
     plan: free 
 
+    # start command for runnign static files
+    startCommand: |
+      python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput &&
+      gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:$PORT
+
+
+
+
+
     # Environment variables for RUNTIME only (if you need specific ones not passed as buildArgs)
     # Render will automatically inject PORT.
     envVars:
