@@ -46,5 +46,4 @@ EXPOSE 8000
 # Define the command to run the application using Gunicorn
 # Using python -m for robustness
 CMD python manage.py migrate --noinput && \
-    DJANGO_ENV=production python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:${PORT:-8000}
-# CMD ["gunicorn", "ecommerce_backend.wsgi:application", "--bind", "0.0.0.0:${PORT:-8000}"]
+    DJANGO_ENV=production python -m gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:$PORT
