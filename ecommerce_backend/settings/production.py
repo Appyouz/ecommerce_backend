@@ -26,9 +26,7 @@ SECURE_SSL_REDIRECT = True # Redirect HTTP to HTTPS (Render handles HTTPS usuall
 # CSRF_COOKIE_SAMESITE and SESSION_COOKIE_SAMESITE are 'None' in base.py which is fine for cross-site.
 
 #Cloudinary configurations
-CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET')
+CLOUDINARY_URL = env('CLOUDINARY_URL')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
