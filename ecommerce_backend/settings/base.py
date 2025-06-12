@@ -210,10 +210,6 @@ ACCOUNT_LOGIN_METHODS = ['username', 'email']
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
 
-#Cloudinary configurations
-CLOUDINARY_URL = env('CLOUDINARY_URL', default=None)
-if CLOUDINARY_URL:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # MEDIA FILES SETTINGS
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
