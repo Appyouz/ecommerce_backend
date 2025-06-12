@@ -213,6 +213,3 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
-#Cloudinary configurations
-CLOUDINARY_URL = env('CLOUDINARY_URL')
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
