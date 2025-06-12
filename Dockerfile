@@ -37,6 +37,8 @@ RUN pip install --no-cache-dir -r ./requirements.txt gunicorn
 # Copy application code
 COPY . /app/
 
+RUN python manage.py collectstatic --noinput
+
 # Expose port
 EXPOSE 8000
 
