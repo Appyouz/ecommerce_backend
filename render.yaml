@@ -7,8 +7,9 @@ services:
     plan: free
 
     # Start command for running Django with Gunicorn
+    #      python manage.py migrate --noinput
+
     startCommand: |
-      python manage.py migrate --noinput
       gunicorn ecommerce_backend.wsgi:application --bind 0.0.0.0:$PORT
 
     # Environment variables for runtime
