@@ -1,11 +1,13 @@
-from rest_framework import status
+from rest_framework import status, generics
+from .permissions import IsSeller
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serialzers import UserSerializer
 from dj_rest_auth.views import LoginView, LogoutView
-from rest_framework_simplejwt.tokens import RefreshToken # <--- NEW IMPORT
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
+from .serialzers import SellerRegistrationSerializer
 
 class Home(APIView):
     permission_classes = [IsAuthenticated]
@@ -74,3 +76,14 @@ class CustomLogoutView(LogoutView):
         # We don't need to unset cookies here, as frontend clears localStorage.
         return response
 
+
+class SellerRegistrationView(generics.CreateAPIView):
+    serializer_class = SellerRegistrationSerializer
+    permission_classes = [AllowAny]
+
+class SellerDashboardView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsSeller]
+    serializer_class = UserSerializer
+
+    def get_objects(self):  
+        return self.request.user

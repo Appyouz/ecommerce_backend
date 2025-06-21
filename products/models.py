@@ -33,6 +33,12 @@ class Product(models.Model):
         blank=True,
         related_name='products'
     )
+    seller = models.ForeignKey(
+        'accounts.User',
+        on_delete=models.CASCADE,
+        related_name='products',
+        limit_choices_to={'role': 'SELLER'}
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
