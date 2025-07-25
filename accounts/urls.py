@@ -6,4 +6,5 @@ urlpatterns = [
     path('', Home.as_view()),
     path('register/seller/', SellerRegistrationView.as_view(), name='seller_register'),
     path('seller/dashboard/', SellerDashboardView.as_view(), name='seller_dashboard'),
+    # path('seller/dashboard/<int:pk>/', SellerDashboardView.as_view(), name='seller_dashboard'),
 ]

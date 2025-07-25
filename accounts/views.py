@@ -1,3 +1,4 @@
+from requests import api
 from rest_framework import status, generics
 from .permissions import IsSeller
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -8,6 +9,7 @@ from dj_rest_auth.views import LoginView, LogoutView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
 from .serialzers import SellerRegistrationSerializer
+from .models import User
 
 class Home(APIView):
     permission_classes = [IsAuthenticated]
@@ -81,9 +83,18 @@ class SellerRegistrationView(generics.CreateAPIView):
     serializer_class = SellerRegistrationSerializer
     permission_classes = [AllowAny]
 
-class SellerDashboardView(generics.RetrieveAPIView):
+class SellerDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsSeller]
-    serializer_class = UserSerializer
-
-    def get_objects(self):  
-        return self.request.user
+    
+    def get(self, request, *args, **kwargs):
+        from products.serializers import ProductSerializer
+        
+        user = request.user
+        return Response({
+            'profile': UserSerializer(user).data,
+            'products': ProductSerializer(user.products.all(), many=True).data,
+            'stats': {
+                'product_count': user.products.count(),
+                # Add more stats as needed
+            }
+        })

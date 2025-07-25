@@ -48,9 +48,6 @@ class SellerRegistrationSerializer(serializers.Serializer):
             raise serializers.ValidationError({"username": "This username already exists."})
         if User.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError({"email": "This email already exists."})
-        return data
-    
-    def variable(self,data):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("Passwords don't match.")
         return data
