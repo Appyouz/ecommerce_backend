@@ -29,4 +29,13 @@ CSRF_TRUSTED_ORIGINS = [
 # SESSION_COOKIE_SAMESITE = 'Lax'
 # CSRF_COOKIE_SAMESITE = 'Lax'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.SessionAuthentication', # Keep for Django Admin
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # For Bearer tokens
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated', # Adjust per view if needed
+    ),
+}
 print("DEBUG: Using local settings.") # For debugging purposes
