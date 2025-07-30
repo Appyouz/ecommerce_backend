@@ -164,6 +164,8 @@ REST_AUTH = {
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_GENERATE_TOKEN': True, # Important for JWT logout
 
+    #This line points to UserSerializer
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer', 
     # CRUCIAL: Tell dj-rest-auth to use the JWTSerializer to output tokens in the body
     'SERIALIZERS': {
         'LOGIN_SERIALIZER': 'accounts.serializers.CustomJWTLoginSerializer',
