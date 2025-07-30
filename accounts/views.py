@@ -4,11 +4,10 @@ from .permissions import IsSeller
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serialzers import UserSerializer
+from .serializers import UserSerializer,SellerRegistrationSerializer
 from dj_rest_auth.views import LoginView, LogoutView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
-from .serialzers import SellerRegistrationSerializer
 from .models import User
 
 class Home(APIView):

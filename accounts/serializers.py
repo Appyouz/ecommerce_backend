@@ -13,7 +13,7 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.CharField(source='get_role_display')
+    role = serializers.CharField(read_only=True)
     seller_profile = SellerProfileSerializer(read_only=True)
     class Meta:
         model = User
