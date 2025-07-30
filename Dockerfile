@@ -1,6 +1,5 @@
 # base image start from an official python package
-FROM python:3.11-slim-buster
-
+FROM python:3.12-slim
 # Declare build arguments (these are passed from render.yaml)
 ARG SECRET_KEY
 ARG DATABASE_URL
