@@ -1,9 +1,14 @@
+from itertools import product
+from typing import override
 from django_filters import filterset
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from .permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 # Viewset for the cateogry model
 # Provides CRUD operations for categories
@@ -20,17 +25,29 @@ class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows products to be viewed or edited.
     """
-    queryset = Product.objects.all().order_by('name')
+    @override
+    def get_queryset(self):
+        return Product.objects.filter(seller=self.request.user).order_by('name')
+
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
 
     # filter backends
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category']
     search_fields = ['name', 'description']
 
-    # Method called when creating a new object
+    @override
+    def get_object(self):
+        queryset = Product.objects.all()
+        obj = get_object_or_404(queryset, pk=self.kwargs['pk'])
+        self.check_object_permissions(self.request, obj)
+        return obj
 
+
+
+    # Method called when creating a new object
     def perform_create(self, serializer):
         category_id = self.request.data.get('category_id')
         category = None
@@ -42,7 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 pass
 
         # If found save the serializer by passing the instance of category
-        serializer.save(category=category)
+        serializer.save(category=category,seller=self.request.user)
 
 
 
