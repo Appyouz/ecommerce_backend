@@ -13,10 +13,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category  = serializers.PrimaryKeyRelatedField(
+    category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
         required=True
-    )    
+    )
     # Add seller to the list of fields. It will be automatically set by the view but should
     # be shown in the response.
     seller = serializers.PrimaryKeyRelatedField(read_only=True)
