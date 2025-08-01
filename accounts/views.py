@@ -9,6 +9,8 @@ from dj_rest_auth.views import LoginView, LogoutView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
 from .models import User
+from products.serializers import ProductSerializer
+
 
 class Home(APIView):
     permission_classes = [IsAuthenticated]
@@ -63,13 +65,14 @@ class CustomLoginView(LoginView):
             # If user is not authenticated after super().get_response(),
             # it means login failed, so no tokens should be in response.
             print("DEBUG: CustomLoginView: User not authenticated after super().get_response(). No tokens added.")
-
-        def post(self, request, *args, **kwargs):
-            print("DEBUG: Request data:", request.data)
-            print("DEBUG: Request content type:", request.content_type)
-            return super().post(request, *args, **kwargs)
-
+       
         return response
+
+    def post(self, request, *args, **kwargs):
+        print("DEBUG: Request data:", request.data)
+        print("DEBUG: Request content type:", request.content_type)
+        return super().post(request, *args, **kwargs)
+
 
 class CustomLogoutView(LogoutView):
     def post(self, request, *args, **kwargs):
@@ -86,7 +89,6 @@ class SellerDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsSeller]
     
     def get(self, request, *args, **kwargs):
-        from products.serializers import ProductSerializer
         
         user = request.user
         return Response({
