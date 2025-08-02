@@ -1,38 +1,37 @@
 import os
+import sys
 from django.contrib.auth import get_user_model
-from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
-User = get_user_model()
-
-def create_admin_user():
-    """
-    Creates a superuser programmatically.
-    This script should be used for one-off deployments and deleted afterwards.
-    """
-    if User.objects.filter(username='admin').exists():
-        print("Admin user already exists. Skipping.")
+def create_admin():
+    try:
+        User = get_user_model()
+    except Exception as e:
+        print(f"Failed to get user model: {e}")
         return
 
-    # Use a secure, temporary password. You must change this immediately!
-    temp_password = os.environ.get('DJANGO_SUPERUSER_TEMP_PASSWORD', 'temp_password_1234')
-    
+    username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
+    email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+    password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+
+    if not password:
+        print("DJANGO_SUPERUSER_PASSWORD environment variable is not set. Cannot create superuser.")
+        return
+
     try:
-        User.objects.create_superuser(
-            username='admin',
-            email='admin@example.com',
-            password=temp_password
-        )
-        print("Superuser 'admin' created successfully with a temporary password.")
-        print("Please log in to your Django Admin and change this password immediately!")
+        User.objects.get(username=username)
+        print(f"Superuser '{username}' already exists. Skipping.")
+    except ObjectDoesNotExist:
+        print(f"Creating superuser '{username}'...")
+        User.objects.create_superuser(username=username, email=email, password=password)
+        print("Superuser created. REMEMBER TO CHANGE THE PASSWORD.")
     except Exception as e:
-        print(f"Failed to create superuser: {e}")
+        print(f"An unexpected error occurred: {e}")
+        sys.exit(1)
 
-if __name__ == '__main__':
-    # Ensure Django settings are configured before running
-    # This is not strictly necessary if called from a manage.py command
-    # but good practice for standalone scripts.
-    if not settings.configured:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce_backend.settings')
-        os.environ.setdefault('DJANGO_CONFIGURATION', 'production')
-
-    create_admin_user()
+if __name__ == "__main__":
+    import django
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ecommerce_backend.settings")
+    os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
+    django.setup()
+    create_admin()
