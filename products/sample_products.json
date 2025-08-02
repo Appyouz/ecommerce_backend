@@ -1,0 +1,42 @@
+[
+  {
+    "name": "The Great Gatsby",
+    "description": "The story of the mysterious millionaire Jay Gatsby and his obsession with a former lover.",
+    "price": 15.0,
+    "stock": 50,
+    "category_name": "Books",
+    "image_path": "images/gastsby.jpeg"
+  },
+  {
+    "name": "Apple Watch Series 9",
+    "description": "The latest Apple Watch with advanced health features and a brighter display.",
+    "price": 399.99,
+    "stock": 10,
+    "category_name": "Electronics",
+    "image_path": "images/apple-watch-9.jpeg"
+  },
+  {
+    "name": "Echo Dot (5th Gen)",
+    "description": "A compact smart speaker with Alexa. Perfect for any room in your home.",
+    "price": 49.99,
+    "stock": 30,
+    "category_name": "Electronics",
+    "image_path": "images/echo-dot-5th-gen.jpeg"
+  },
+  {
+    "name": "Bose QuietComfort Earbuds II",
+    "description": "World-class noise cancellation, custom-tuned sound, and a comfortable, secure fit.",
+    "price": 279.0,
+    "stock": 15,
+    "category_name": "Electronics",
+    "image_path": "images/bose-earbud.jpeg"
+  },
+  {
+    "name": "Fjallraven Kanken Backpack",
+    "description": "A classic backpack with a simple design. A very popular and durable daypack.",
+    "price": 80.0,
+    "stock": 25,
+    "category_name": "Bags",
+    "image_path": "images/kanken-backpack.jpeg"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "The Secret Garden",
+    "description": "A children's novel by Frances Hodgson Burnett about a young orphaned girl...",
+    "price": 10.5,
+    "stock": 40,
+    "category_name": "Books",
+    "image_path": "images/bookimage.png"
+  },
+  {
+    "name": "Classic T-Shirt",
+    "description": "A comfortable and stylish cotton t-shirt in a standard fit.",
+    "price": 25.0,
+    "stock": 100,
+    "category_name": "Apparel",
+    "image_path": "images/shirt.jpeg"
+  },
+  {
+    "name": "Comfort Fit Jeans",
+    "description": "Durable and stylish denim jeans with a modern, relaxed fit.",
+    "price": 60.0,
+    "stock": 75,
+    "category_name": "Apparel",
+    "image_path": "images/pants.png"
+  },
+  {
+    "name": "Wireless Mouse",
+    "description": "An ergonomic wireless mouse with long battery life and adjustable DPI settings.",
+    "price": 35.0,
+    "stock": 50,
+    "category_name": "Electronics",
+    "image_path": "images/mouse.jpeg"
+  },
+  {
+    "name": "Gaming Laptop",
+    "description": "A high-performance gaming laptop with a powerful processor and dedicated graphics.",
+    "price": 1200.0,
+    "stock": 5,
+    "category_name": "Electronics",
+    "image_path": "images/Laptop-Free-Download-PNG-2321090991.png"
+  }
+]
