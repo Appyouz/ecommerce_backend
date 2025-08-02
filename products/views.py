@@ -21,14 +21,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows products to be viewed or edited.
     """
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category']
     search_fields = ['name', 'description']
 
     def get_queryset(self):
-        return Product.objects.filter(seller=self.request.user).order_by('name')
+        return Product.objects.all().order_by('name')
 
     def get_object(self):
         queryset = Product.objects.all()
