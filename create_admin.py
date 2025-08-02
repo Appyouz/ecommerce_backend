@@ -1,3 +1,4 @@
+# create_admin.py
 import os
 import sys
 from django.contrib.auth import get_user_model
@@ -32,6 +33,7 @@ def create_admin():
 if __name__ == "__main__":
     import django
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ecommerce_backend.settings")
+    # Assuming you're using 'django-configurations' in production
     os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
     django.setup()
     create_admin()
