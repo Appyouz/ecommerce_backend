@@ -1,10 +1,14 @@
-from rest_framework import viewsets, filters, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import viewsets, filters, permissions, status
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from .models import Product,Category
 from .serializers import ProductSerializer,CategorySerializer
 from .permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAdminUser
+from django.core.management import call_command
+
 # Viewset for the cateogry model
 # Provides CRUD operations for categories
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -43,3 +47,27 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     # The serializer's automatic handling also works for updates.
     # No custom perform_update is needed.
+
+
+class PopulateProductsView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+       seller_name = request.data.get('seller_name') 
+
+       if not seller_name:
+            return Response(
+                {'error': 'seller_name is a required field'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+       try:
+          call_command('populate_products', seller_name)
+          return Response(
+                   {'message':  'Database population command successfully executed.'},
+                   status=status.HTTP_200_OK
+               )
+       except Exception as e:
+           return Response(
+               {'error':f'An error occured: {str(e)}'},
+               status=status.HTTP_500_INTERNAL_SERVER_ERROR
+           )
