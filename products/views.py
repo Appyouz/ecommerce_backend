@@ -32,6 +32,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description']
 
     def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Product.objects.filter(seller=self.request.user).order_by('name')
+
         return Product.objects.all().order_by('name')
 
     def get_object(self):
