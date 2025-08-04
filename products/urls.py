@@ -11,7 +11,7 @@ router.register(r'products', ProductViewSet, basename='products') # Register Pro
 router.register(r'categories', CategoryViewSet) # Register CategoryViewSet at '/categories/'
 
 urlpatterns = [
-    path('populate_db/', PopulateProductsView.as_view(), name='populate_db'),
+    path('products/populate_db/', PopulateProductsView.as_view(), name='populate_db'),
     path('', include(router.urls)),
 ]
 
