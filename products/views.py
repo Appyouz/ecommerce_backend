@@ -8,6 +8,7 @@ from .serializers import ProductSerializer,CategorySerializer
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAdminUser
 from django.core.management import call_command
+from django.core.management.base import CommandError
 
 # Viewset for the cateogry model
 # Provides CRUD operations for categories
@@ -56,21 +57,37 @@ class PopulateProductsView(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request, *args, **kwargs):
-       seller_name = request.data.get('seller_name') 
+        seller_name = request.data.get('seller_name')
+        # This line is the key fix: Get json_path from the request payload
+        json_path = request.data.get('json_path')
 
-       if not seller_name:
+        if not seller_name:
             return Response(
                 {'error': 'seller_name is a required field'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-       try:
-          call_command('populate_products', seller_name)
-          return Response(
-                   {'message':  'Database population command successfully executed.'},
-                   status=status.HTTP_200_OK
-               )
-       except Exception as e:
-           return Response(
-               {'error':f'An error occured: {str(e)}'},
-               status=status.HTTP_500_INTERNAL_SERVER_ERROR
-           )
+        
+        # Check if the json_path was provided in the request
+        if not json_path:
+            return Response(
+                {'error': 'json_path is a required field'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Pass both seller_name and json_path as named arguments to the command
+            call_command('populate_products', seller_name, json_path=json_path)
+            return Response(
+                {'message': 'Database population command successfully executed.'},
+                status=status.HTTP_200_OK
+            )
+        except CommandError as e:
+            return Response(
+                {'error': f'An error occured: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'An unexpected error occured: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
