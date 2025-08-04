@@ -1,8 +1,6 @@
 #!/bin/bash
- ACCESS_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU0MzEyMDQ3LCJpYXQiOjE3NTQzMDg0NDcsImp0aSI6IjE0MjM2MTQ3OTE1MjRkMWM4ZjkyNzA0MDg5NDJhOGI0IiwidXNlcl9pZCI6MX0.r98vFw_JTWG6czILb8kYCkpSDklyf4HRefNai5TmexI"
 # A script to populate the database for a specific seller.
 # This script uses environment variables for the API URL and the auth token.
-# You can set these in your terminal or in a .env file.
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
@@ -11,10 +9,12 @@ set -e
 # Use the provided API_URL environment variable, or default to the local URL.
 BACKEND_URL="${API_URL:-http://localhost:8000}"
 
-# You must set a valid JWT access token from your seller account.
-# You can get this by logging in and inspecting the browser's cookies or
-# local storage, or by using a tool like Postman.
-# ACCESS_TOKEN="${AUTH_TOKEN}"
+# JWT access token for an admin user.
+# IMPORTANT: DO NOT HARDCODE YOUR TOKEN. USE AN ENVIRONMENT VARIABLE INSTEAD.
+# For example, in your terminal, run:
+# export ACCESS_TOKEN="your_token_here"
+# This will set the variable for your current terminal session.
+ACCESS_TOKEN="${ACCESS_TOKEN}"
 
 # --- Script Logic ---
 if [ "$#" -ne 2 ]; then
@@ -32,10 +32,10 @@ echo "JSON File Path: $JSON_FILE_PATH"
 echo "Backend URL: $BACKEND_URL"
 echo "-----------------------------------"
 
-# Check if required environment variables are set
+# Check if the ACCESS_TOKEN environment variable is set
 if [ -z "$ACCESS_TOKEN" ]; then
-    echo "Error: AUTH_TOKEN environment variable must be set."
-    echo "Example: export AUTH_TOKEN=ey...xyz"
+    echo "Error: ACCESS_TOKEN environment variable must be set."
+    echo "Example: export ACCESS_TOKEN=ey...xyz"
     exit 1
 fi
 
